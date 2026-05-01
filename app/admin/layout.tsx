@@ -3,6 +3,7 @@ import {
   CalendarRange,
   LayoutDashboard,
   Scissors,
+  TrendingUp,
   Users,
 } from "lucide-react";
 import { DashboardShell } from "@/components/dashboard-shell";
@@ -13,6 +14,7 @@ const NAV = [
   { href: "/admin/appointments", label: "Programări", icon: CalendarRange },
   { href: "/admin/barbers", label: "Frizeri", icon: Users },
   { href: "/admin/services", label: "Servicii", icon: Scissors },
+  { href: "/admin/stats", label: "Statistici", icon: TrendingUp },
 ];
 
 export default async function AdminLayout({
