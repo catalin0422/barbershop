@@ -81,7 +81,7 @@ function Hero() {
               className="mt-10 inline-flex items-center gap-3 text-sm text-white/60 hover:text-white transition-colors group"
             >
               <span className="w-8 h-px bg-white/40 group-hover:w-12 group-hover:bg-white transition-all" />
-              Rezervă o consultație gratuită
+              Programează-te
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
