@@ -1,10 +1,11 @@
 import { redirect } from "next/navigation";
-import { CalendarDays, LayoutDashboard, User } from "lucide-react";
+import { CalendarDays, CalendarOff, LayoutDashboard, User } from "lucide-react";
 import { DashboardShell } from "@/components/dashboard-shell";
 import { createClient } from "@/lib/supabase/server";
 
 const NAV = [
   { href: "/dashboard", label: "Programări", icon: CalendarDays },
+  { href: "/dashboard/schedule", label: "Programul meu", icon: CalendarOff },
   { href: "/dashboard/profile", label: "Profilul meu", icon: User },
   { href: "/", label: "Site public", icon: LayoutDashboard },
 ];
