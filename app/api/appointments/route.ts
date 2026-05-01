@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { isSlotFree } from "@/lib/availability";
-import { sendBookingConfirmation, sendBarberNotification } from "@/lib/email";
+import { sendBookingConfirmation } from "@/lib/email";
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +16,16 @@ interface CreateBody {
 }
 
 export async function POST(request: Request) {
+  try {
+    return await handlePost(request);
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error("[api/appointments] unhandled:", msg);
+    return NextResponse.json({ error: msg }, { status: 500 });
+  }
+}
+
+async function handlePost(request: Request) {
   let body: CreateBody;
   try {
     body = (await request.json()) as CreateBody;
@@ -123,3 +133,4 @@ export async function POST(request: Request) {
 
   return NextResponse.json({ id: data.id }, { status: 201 });
 }
+
