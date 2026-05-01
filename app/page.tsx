@@ -2,12 +2,16 @@ import Link from "next/link";
 import {
   ArrowRight,
   Clock,
+  MapPin,
+  Phone,
   Play,
   Scissors,
+  Star,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeaderServer } from "@/components/site-header-server";
+import { ContactForm } from "@/components/contact-form";
 import { createClient } from "@/lib/supabase/server";
 import { formatDuration, formatPrice } from "@/lib/utils";
 import type { Profile, Service } from "@/lib/types";
@@ -50,6 +54,9 @@ export default async function HomePage() {
         <ServicesSection services={services} />
         {barbers.length > 0 && <BarbersSection barbers={barbers} />}
         <AboutSection />
+        <GallerySection />
+        <TestimonialsSection />
+        <ContactSection />
         <CtaSection />
       </main>
       <SiteFooter />
@@ -298,6 +305,163 @@ function AboutSection() {
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+const GALLERY = [
+  { src: "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=800&q=80", alt: "Tunsoare clasică" },
+  { src: "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=800&q=80", alt: "Styling bărbat" },
+  { src: "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=800&q=80", alt: "Barbierit" },
+  { src: "https://images.unsplash.com/photo-1634449571010-02389ed0f9b0?w=800&q=80", alt: "Frizer la lucru" },
+  { src: "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=800&q=80", alt: "Interior salon" },
+  { src: "https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=800&q=80", alt: "Produse premium" },
+];
+
+function GallerySection() {
+  return (
+    <section id="gallery" className="bg-black py-24 md:py-32 border-t border-white/5">
+      <div className="max-w-7xl mx-auto px-8 md:px-16 lg:px-24">
+        <div className="mb-12">
+          <p className="text-xs tracking-[0.3em] uppercase text-white/30 mb-4">Galerie</p>
+          <h2 className="font-display text-4xl md:text-5xl font-bold text-white">
+            Arta <span className="text-gradient-gold">noastră.</span>
+          </h2>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-3">
+          {GALLERY.map((img, i) => (
+            <div
+              key={i}
+              className={`relative overflow-hidden rounded-lg ${i === 0 ? "md:row-span-2" : ""}`}
+            >
+              <div className={i === 0 ? "aspect-[3/4] md:aspect-auto md:h-full" : "aspect-square"}>
+                <img
+                  src={img.src}
+                  alt={img.alt}
+                  className="absolute inset-0 h-full w-full object-cover grayscale hover:grayscale-0 transition-all duration-700 hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-black/20 hover:bg-black/0 transition-colors duration-500" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+const TESTIMONIALS = [
+  {
+    name: "Alexandru M.",
+    text: "Cel mai bun salon din oraș. Frizerul a înțeles exact ce voiam fără să explic prea mult. Mă întorc de fiecare dată.",
+    rating: 5,
+    since: "Client din 2022",
+  },
+  {
+    name: "Bogdan T.",
+    text: "Atmosferă deosebită, curățenie impecabilă și rezultate de calitate. Rezervarea online e super simplă.",
+    rating: 5,
+    since: "Client din 2023",
+  },
+  {
+    name: "Mihai R.",
+    text: "Am venit prima dată acum 2 ani și nu am mai schimbat salonul de atunci. Profesionalism la nivel înalt.",
+    rating: 5,
+    since: "Client din 2021",
+  },
+];
+
+function TestimonialsSection() {
+  return (
+    <section id="reviews" className="bg-black py-24 md:py-32 border-t border-white/5">
+      <div className="max-w-7xl mx-auto px-8 md:px-16 lg:px-24">
+        <div className="mb-12">
+          <p className="text-xs tracking-[0.3em] uppercase text-white/30 mb-4">Recenzii</p>
+          <h2 className="font-display text-4xl md:text-5xl font-bold text-white">
+            Ce spun <span className="text-gradient-gold">clienții.</span>
+          </h2>
+        </div>
+        <div className="grid md:grid-cols-3 gap-6">
+          {TESTIMONIALS.map((t) => (
+            <div key={t.name} className="rounded-xl border border-white/5 bg-white/[0.02] p-6 flex flex-col gap-4">
+              <div className="flex gap-0.5">
+                {Array.from({ length: t.rating }).map((_, i) => (
+                  <Star key={i} className="h-4 w-4 fill-gold-400 text-gold-400" />
+                ))}
+              </div>
+              <p className="text-white/60 text-sm leading-relaxed flex-1">"{t.text}"</p>
+              <div>
+                <p className="text-white font-medium text-sm">{t.name}</p>
+                <p className="text-white/30 text-xs mt-0.5">{t.since}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ContactSection() {
+  return (
+    <section id="contact" className="bg-black py-24 md:py-32 border-t border-white/5">
+      <div className="max-w-7xl mx-auto px-8 md:px-16 lg:px-24">
+        <div className="mb-12">
+          <p className="text-xs tracking-[0.3em] uppercase text-white/30 mb-4">Contact</p>
+          <h2 className="font-display text-4xl md:text-5xl font-bold text-white">
+            Ia <span className="text-gradient-gold">legătura.</span>
+          </h2>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-12 items-start">
+          {/* Left — info + map */}
+          <div className="space-y-8">
+            <div className="space-y-4">
+              <div className="flex items-start gap-3">
+                <MapPin className="h-5 w-5 text-gold-400 mt-0.5 shrink-0" />
+                <div>
+                  <p className="text-white font-medium">Adresă</p>
+                  <p className="text-white/50 text-sm mt-0.5">Strada Mendeleev 7, București</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <Phone className="h-5 w-5 text-gold-400 mt-0.5 shrink-0" />
+                <div>
+                  <p className="text-white font-medium">Telefon</p>
+                  <p className="text-white/50 text-sm mt-0.5">+40 712 345 678</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <Clock className="h-5 w-5 text-gold-400 mt-0.5 shrink-0" />
+                <div>
+                  <p className="text-white font-medium">Program</p>
+                  <p className="text-white/50 text-sm mt-0.5">Luni – Sâmbătă: 10:00 – 20:00</p>
+                  <p className="text-white/50 text-sm">Duminică: închis</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Google Maps embed — înlocuiește src cu locația ta */}
+            <div className="rounded-xl overflow-hidden border border-white/10 h-56">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2848.8444388087937!2d26.09748!3d44.44676!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x40b1ff4770adb5b3%3A0x58087f627f5be6d0!2sStrada%20Mendeleev%2C%20Bucure%C8%99ti!5e0!3m2!1sro!2sro!4v1700000000000"
+                width="100%"
+                height="100%"
+                style={{ border: 0, filter: "invert(90%) hue-rotate(180deg)" }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
+            </div>
+          </div>
+
+          {/* Right — contact form */}
+          <div className="rounded-xl border border-white/5 bg-white/[0.02] p-6 md:p-8">
+            <h3 className="font-display text-2xl text-white mb-6">Trimite un mesaj</h3>
+            <ContactForm />
           </div>
         </div>
       </div>

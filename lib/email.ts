@@ -123,3 +123,20 @@ export async function sendBarberNotification(data: AppointmentEmailData & { barb
 </div>`,
   });
 }
+
+export async function sendContactMessage({ name, phone, message }: { name: string; phone: string; message: string }) {
+  if (!process.env.RESEND_API_KEY || !process.env.CONTACT_EMAIL) return;
+  await getResend().emails.send({
+    from: FROM,
+    to: process.env.CONTACT_EMAIL,
+    subject: `Mesaj nou de la ${name}`,
+    html: `<div style="font-family:sans-serif;max-width:500px;margin:0 auto;padding:24px;background:#0f0e0d;color:#f5f0e8;">
+  <h2 style="color:#d4af37;">✉ Mesaj nou prin site</h2>
+  <table style="width:100%;border-collapse:collapse;margin:16px 0;">
+    <tr><td style="padding:8px;color:#8a7a6a;">Nume</td><td style="padding:8px;font-weight:600;">${name}</td></tr>
+    <tr><td style="padding:8px;color:#8a7a6a;">Telefon</td><td style="padding:8px;font-weight:600;">${phone || "—"}</td></tr>
+  </table>
+  <div style="background:#1a1714;border:1px solid #2a2520;border-radius:8px;padding:16px;margin-top:8px;white-space:pre-wrap;">${message}</div>
+</div>`,
+  });
+}
