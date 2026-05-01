@@ -16,7 +16,7 @@ const display = Bebas_Neue({
 });
 
 export const metadata: Metadata = {
-  title: "Barbershop — Premium Grooming Studio",
+  title: "BarberShop — Premium Grooming Studio",
   description:
     "Programări online, frizeri experimentați și o experiență de grooming premium.",
 };

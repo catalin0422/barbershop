@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { Scissors } from "lucide-react";
 import { LoginForm } from "@/components/login-form";
+import { BarbershopLogo } from "@/components/barbershop-logo";
 
 export const metadata = {
-  title: "Login — MaisonBarber",
+  title: "Login — BarberShop",
 };
 
 export default function LoginPage({
@@ -17,11 +17,9 @@ export default function LoginPage({
 
       <div className="w-full max-w-md">
         <Link href="/" className="flex items-center gap-2 justify-center mb-8">
-          <span className="grid h-10 w-10 place-items-center rounded-md bg-gradient-to-br from-gold-400 to-gold-700 text-gold-900 shadow-lg shadow-gold-500/30">
-            <Scissors className="h-5 w-5" />
-          </span>
-          <span className="font-display text-xl font-semibold">
-            Maison<span className="text-gold-400">Barber</span>
+          <BarbershopLogo size={44} />
+          <span className="font-display text-xl tracking-widest text-white">
+            BARBERSHOP
           </span>
         </Link>
 

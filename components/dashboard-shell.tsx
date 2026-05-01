@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { LogOut, Scissors } from "lucide-react";
+import { LogOut } from "lucide-react";
+import { BarbershopLogo } from "@/components/barbershop-logo";
 
 interface NavItem {
   href: string;
@@ -20,11 +21,9 @@ export function DashboardShell({ title, user, nav, children }: Props) {
       <aside className="hidden lg:flex flex-col border-r border-white/5 bg-card/40 backdrop-blur-sm sticky top-0 h-screen">
         <div className="p-6 border-b border-white/5">
           <Link href="/" className="flex items-center gap-2">
-            <span className="grid h-9 w-9 place-items-center rounded-md bg-gradient-to-br from-gold-400 to-gold-700 text-gold-900">
-              <Scissors className="h-5 w-5" />
-            </span>
-            <span className="font-display text-lg font-semibold">
-              Maison<span className="text-gold-400">Barber</span>
+            <BarbershopLogo size={36} />
+            <span className="font-display text-xl tracking-widest text-white">
+              BARBERSHOP
             </span>
           </Link>
         </div>

@@ -283,7 +283,7 @@ function AboutSection() {
               modernă.
             </h2>
             <p className="mt-8 text-white/50 leading-relaxed">
-              Am deschis MaisonBarber în 2019 cu o singură obsesie: să recreăm
+              Am deschis BarberShop în 2019 cu o singură obsesie: să recreăm
               ritualul clasic al frizeriei într-un spațiu contemporan. Fiecare
               tunsoare începe cu o consultație, fiecare brici cu un prosop
               fierbinte, fiecare client este tratat ca un oaspete.

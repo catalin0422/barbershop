@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Instagram, MapPin, Phone, Scissors } from "lucide-react";
+import { Instagram, MapPin, Phone } from "lucide-react";
+import { BarbershopLogo } from "@/components/barbershop-logo";
 
 export function SiteFooter() {
   return (
@@ -10,11 +11,9 @@ export function SiteFooter() {
       <div className="container py-12 grid gap-8 md:grid-cols-4">
         <div className="md:col-span-2">
           <Link href="/" className="flex items-center gap-2">
-            <span className="grid h-9 w-9 place-items-center rounded-md bg-gradient-to-br from-gold-400 to-gold-700 text-gold-900">
-              <Scissors className="h-5 w-5" />
-            </span>
-            <span className="font-display text-lg font-semibold">
-              Maison<span className="text-gold-400">Barber</span>
+            <BarbershopLogo size={40} />
+            <span className="font-display text-xl tracking-widest text-white">
+              BARBERSHOP
             </span>
           </Link>
           <p className="mt-4 text-sm text-muted-foreground max-w-md">
@@ -35,7 +34,7 @@ export function SiteFooter() {
               <Phone className="h-4 w-4 text-gold-500" /> +40 712 345 678
             </li>
             <li className="flex items-center gap-2">
-              <Instagram className="h-4 w-4 text-gold-500" /> @maisonbarber
+              <Instagram className="h-4 w-4 text-gold-500" /> @barbershop
             </li>
           </ul>
         </div>
@@ -52,7 +51,7 @@ export function SiteFooter() {
       </div>
       <div className="border-t border-white/5">
         <div className="container py-4 text-xs text-muted-foreground flex flex-col sm:flex-row gap-2 justify-between items-center">
-          <span>© {new Date().getFullYear()} MaisonBarber. All rights reserved.</span>
+          <span>© {new Date().getFullYear()} BarberShop. All rights reserved.</span>
           <span>Crafted with precision.</span>
         </div>
       </div>

@@ -1,6 +1,6 @@
 import { Resend } from "resend";
 
-const FROM = "MaisonBarber <noreply@maisonbarber.ro>";
+const FROM = "BarberShop <noreply@maisonbarber.ro>";
 
 function getResend() {
   return new Resend(process.env.RESEND_API_KEY);
@@ -63,7 +63,7 @@ export async function sendBookingConfirmation(data: AppointmentEmailData) {
 <body>
 <div class="wrapper">
   <div class="header">
-    <div class="logo">✂ MaisonBarber</div>
+    <div class="logo">✂ BarberShop</div>
     <p style="color:#8a7a6a; margin-top:8px;">Programare confirmată</p>
   </div>
 
@@ -87,7 +87,7 @@ export async function sendBookingConfirmation(data: AppointmentEmailData) {
 
   <div class="footer">
     <p>Strada Mendeleev 7, București · +40 712 345 678</p>
-    <p>© ${new Date().getFullYear()} MaisonBarber</p>
+    <p>© ${new Date().getFullYear()} BarberShop</p>
   </div>
 </div>
 </body>

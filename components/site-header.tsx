@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { LayoutDashboard, LogOut, Menu, Scissors, User, X } from "lucide-react";
+import { LayoutDashboard, LogOut, Menu, User, X } from "lucide-react";
+import { BarbershopLogo } from "@/components/barbershop-logo";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
@@ -74,11 +75,9 @@ export function SiteHeader({ authUser, transparent }: Props) {
     )}>
       <div className="container flex h-16 items-center justify-between">
         <Link href="/" className="flex items-center gap-2 group">
-          <span className="grid h-9 w-9 place-items-center rounded-md bg-gradient-to-br from-gold-400 to-gold-700 text-gold-900 shadow-lg shadow-gold-500/30 group-hover:shadow-gold-500/50 transition-shadow">
-            <Scissors className="h-5 w-5" />
-          </span>
-          <span className="font-display text-lg font-semibold tracking-wide">
-            Maison<span className="text-gold-400">Barber</span>
+          <BarbershopLogo size={38} />
+          <span className="font-display text-xl tracking-widest text-white">
+            BARBERSHOP
           </span>
         </Link>
 
