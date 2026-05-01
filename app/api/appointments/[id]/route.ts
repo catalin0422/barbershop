@@ -4,12 +4,7 @@ import type { AppointmentStatus } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
-const ALLOWED: AppointmentStatus[] = [
-  "pending",
-  "confirmed",
-  "completed",
-  "cancelled",
-];
+const ALLOWED: AppointmentStatus[] = ["confirmed", "cancelled"];
 
 export async function PATCH(
   request: Request,

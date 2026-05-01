@@ -39,20 +39,15 @@ interface Row {
   } | null;
 }
 
-// "pending" kept only for display of legacy data — barbers can't set it manually
-const STATUS_OPTIONS: AppointmentStatus[] = [
-  "confirmed",
-  "completed",
-  "cancelled",
-];
+const STATUS_OPTIONS: AppointmentStatus[] = ["confirmed", "cancelled"];
 
 const STATUS_BADGES: Record<
   AppointmentStatus,
   { variant: any; label: string }
 > = {
-  pending: { variant: "warning", label: "Neconfirmată" },
+  pending: { variant: "warning", label: "Confirmată" },
   confirmed: { variant: "default", label: "Confirmată" },
-  completed: { variant: "success", label: "Finalizată" },
+  completed: { variant: "default", label: "Confirmată" },
   cancelled: { variant: "destructive", label: "Anulată" },
 };
 
@@ -97,7 +92,6 @@ export function AppointmentsTable({
           <SelectContent>
             <SelectItem value="all">Toate</SelectItem>
             <SelectItem value="confirmed">Confirmate</SelectItem>
-            <SelectItem value="completed">Finalizate</SelectItem>
             <SelectItem value="cancelled">Anulate</SelectItem>
           </SelectContent>
         </Select>

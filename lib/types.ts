@@ -1,10 +1,6 @@
 export type UserRole = "owner" | "barber";
 
-export type AppointmentStatus =
-  | "pending"
-  | "confirmed"
-  | "completed"
-  | "cancelled";
+export type AppointmentStatus = "confirmed" | "cancelled" | "pending" | "completed";
 
 export interface Profile {
   id: string;

@@ -76,13 +76,17 @@ export async function sendBookingConfirmation(data: AppointmentEmailData) {
     <div class="row"><span class="label">Data</span><span class="value">${dateStr}</span></div>
     <div class="row"><span class="label">Ora</span><span class="value">${timeStr}</span></div>
     <div class="row"><span class="label">Durată</span><span class="value">${data.durationMinutes} min</span></div>
-    <div class="row"><span class="label">Total</span><span class="price">${data.price} RON</span></div>
+    <div class="row"><span class="label">Total</span><span class="price">${data.price} LEI</span></div>
   </div>
 
-  <p style="font-size:13px; color:#8a7a6a;">Plata se face la salon. Dacă dorești să anulezi sau modifici, te rugăm să ne contactezi cu cel puțin 2 ore înainte.</p>
+  <p style="font-size:13px; color:#8a7a6a;">Plata se face la salon. Dacă nu mai poți ajunge, anulează programarea cu cel puțin 2 ore înainte folosind butonul de mai jos.</p>
 
-  <div style="text-align:center;">
-    <a class="btn" href="${SITE}/book">Rezervă din nou</a>
+  <div style="text-align:center; margin-top:24px;">
+    <a class="btn" href="${SITE}/book/cancel/${data.appointmentId}" style="background:transparent;border:1px solid #d4af37;color:#d4af37;font-weight:600;padding:10px 24px;border-radius:8px;text-decoration:none;display:inline-block;">Anulează programarea</a>
+  </div>
+
+  <div style="text-align:center; margin-top:12px;">
+    <a href="${SITE}/book" style="font-size:12px;color:#5a4a3a;text-decoration:underline;">Sau rezervă din nou</a>
   </div>
 
   <div class="footer">

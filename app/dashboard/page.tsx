@@ -1,4 +1,4 @@
-import { Calendar, CheckCircle2, Clock, XCircle } from "lucide-react";
+import { Calendar, Clock, XCircle } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -66,10 +66,9 @@ export default async function BarberDashboardPage() {
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Viitoare" value={upcoming.length} icon={Calendar} />
+      <div className="grid gap-4 sm:grid-cols-3">
+        <StatCard label="Programări viitoare" value={upcoming.length} icon={Calendar} />
         <StatCard label="Azi" value={todayCount} icon={Clock} />
-        <StatCard label="Finalizate" value={counts.completed ?? 0} icon={CheckCircle2} />
         <StatCard label="Anulate" value={counts.cancelled ?? 0} icon={XCircle} />
       </div>
 
