@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Playfair_Display } from "next/font/google";
+import { Inter, Bebas_Neue } from "next/font/google";
 import "./globals.css";
 
 const sans = Inter({
@@ -8,8 +8,9 @@ const sans = Inter({
   display: "swap",
 });
 
-const display = Playfair_Display({
+const display = Bebas_Neue({
   subsets: ["latin"],
+  weight: "400",
   variable: "--font-display",
   display: "swap",
 });

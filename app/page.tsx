@@ -64,8 +64,8 @@ function Hero() {
       <div className="flex flex-1 min-h-screen">
 
         {/* LEFT — text content */}
-        <div className="relative z-10 flex flex-col justify-end pb-20 px-8 md:px-16 lg:px-24 w-full md:w-1/2 bg-black">
-          <div className="max-w-lg pt-40">
+        <div className="relative z-10 flex flex-col justify-center px-8 md:px-16 lg:px-24 w-full md:w-[40%] bg-black">
+          <div className="max-w-lg pt-24 pb-16">
             <p className="text-xs tracking-[0.3em] uppercase text-white/40 mb-6">
               Premium Grooming Studio
             </p>
@@ -87,7 +87,7 @@ function Hero() {
           </div>
 
           {/* Bottom watch videos */}
-          <div className="absolute bottom-10 right-0 md:right-auto md:left-24 flex items-center gap-3 text-xs text-white/40 hover:text-white/70 transition-colors cursor-pointer">
+          <div className="absolute bottom-10 left-8 md:left-16 lg:left-24 flex items-center gap-3 text-xs text-white/40 hover:text-white/70 transition-colors cursor-pointer">
             <span className="w-7 h-7 rounded-full border border-white/20 flex items-center justify-center">
               <Play className="h-3 w-3 fill-current" />
             </span>
@@ -96,7 +96,7 @@ function Hero() {
         </div>
 
         {/* RIGHT — image */}
-        <div className="hidden md:block md:w-1/2 relative">
+        <div className="hidden md:block md:w-[60%] relative">
           <div className="absolute inset-0">
             <img
               src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=1200&q=85"
