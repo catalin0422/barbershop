@@ -14,8 +14,8 @@ async function requireOwner() {
     .select("role")
     .eq("id", user.id)
     .maybeSingle();
-  if (profile?.role !== "owner") return { ok: false as const, status: 403 };
-  return { ok: true as const, supabase };
+  if ((profile as any)?.role !== "owner") return { ok: false as const, status: 403 };
+  return { ok: true as const };
 }
 
 export async function PATCH(
@@ -35,6 +35,8 @@ export async function PATCH(
   if (!body) {
     return NextResponse.json({ error: "invalid body" }, { status: 400 });
   }
+
+  const admin = createServiceClient();
   const update: Record<string, unknown> = {};
   if (body.full_name !== undefined) update.full_name = body.full_name;
   if (body.role !== undefined) update.role = body.role;
@@ -42,7 +44,7 @@ export async function PATCH(
   if (body.avatar_url !== undefined) update.avatar_url = body.avatar_url || null;
   update.updated_at = new Date().toISOString();
 
-  const { error } = await auth.supabase
+  const { error } = await admin
     .from("profiles")
     .update(update)
     .eq("id", params.id);
@@ -63,11 +65,11 @@ export async function DELETE(
 
   const admin = createServiceClient();
 
-  // Delete the auth user (cascade removes the profile row via FK or trigger)
+  // First try to delete auth user (cascades to profile)
   const { error: authErr } = await admin.auth.admin.deleteUser(params.id);
   if (authErr) {
-    // Fall back to profile-only delete if service key isn't configured
-    const { error: profileErr } = await auth.supabase
+    // Auth delete failed — delete profile row directly with service client
+    const { error: profileErr } = await admin
       .from("profiles")
       .delete()
       .eq("id", params.id);

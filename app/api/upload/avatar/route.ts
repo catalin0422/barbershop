@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createServiceClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
@@ -8,6 +8,7 @@ const MAX_SIZE = 2 * 1024 * 1024; // 2 MB
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 export async function POST(request: Request) {
+  // Verify auth with regular client
   const supabase = createClient();
   const {
     data: { user },
@@ -39,7 +40,10 @@ export async function POST(request: Request) {
   const path = `${user.id}/avatar.${ext}`;
   const bytes = await file.arrayBuffer();
 
-  const { error: uploadErr } = await supabase.storage
+  // Use service client for storage upload to bypass RLS/bucket policies
+  const admin = createServiceClient();
+
+  const { error: uploadErr } = await admin.storage
     .from(BUCKET)
     .upload(path, bytes, {
       contentType: file.type,
@@ -52,12 +56,11 @@ export async function POST(request: Request) {
 
   const {
     data: { publicUrl },
-  } = supabase.storage.from(BUCKET).getPublicUrl(path);
+  } = admin.storage.from(BUCKET).getPublicUrl(path);
 
-  // Add cache-buster so the browser picks up the new image
   const url = `${publicUrl}?t=${Date.now()}`;
 
-  await supabase
+  await admin
     .from("profiles")
     .update({ avatar_url: url })
     .eq("id", user.id);

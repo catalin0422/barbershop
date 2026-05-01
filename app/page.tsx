@@ -64,12 +64,12 @@ function Hero() {
       <div className="flex flex-1 min-h-screen">
 
         {/* LEFT — text content */}
-        <div className="relative z-10 flex flex-col justify-center px-8 md:px-16 lg:px-24 w-full md:w-[40%] bg-black">
-          <div className="max-w-lg pt-24 pb-16">
+        <div className="relative z-10 flex flex-col justify-center px-6 sm:px-10 md:px-16 lg:px-24 w-full md:w-[40%] bg-black">
+          <div className="max-w-lg pt-28 pb-20 md:pt-24 md:pb-16">
             <p className="text-xs tracking-[0.3em] uppercase text-white/40 mb-6">
               Premium Grooming Studio
             </p>
-            <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.05] tracking-tight text-white">
+            <h1 className="font-display text-6xl sm:text-7xl md:text-6xl lg:text-7xl leading-[1.0] tracking-tight text-white">
               Ridică-ți
               <br />
               stilul la
@@ -78,7 +78,7 @@ function Hero() {
             </h1>
             <Link
               href="/book"
-              className="mt-10 inline-flex items-center gap-3 text-sm text-white/60 hover:text-white transition-colors group"
+              className="mt-10 inline-flex items-center gap-3 text-base text-white/60 hover:text-white transition-colors group"
             >
               <span className="w-8 h-px bg-white/40 group-hover:w-12 group-hover:bg-white transition-all" />
               Programează-te
