@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 24 12% 6%;
+    --foreground: 40 33% 96%;
+    --card: 24 14% 9%;
+    --card-foreground: 40 33% 96%;
+    --popover: 24 14% 9%;
+    --popover-foreground: 40 33% 96%;
+    --primary: 43 65% 52%;
+    --primary-foreground: 24 30% 8%;
+    --secondary: 24 10% 14%;
+    --secondary-foreground: 40 33% 96%;
+    --muted: 24 8% 16%;
+    --muted-foreground: 40 10% 65%;
+    --accent: 43 80% 52%;
+    --accent-foreground: 24 30% 8%;
+    --destructive: 0 65% 48%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 24 10% 18%;
+    --input: 24 10% 18%;
+    --ring: 43 65% 52%;
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    color-scheme: dark;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    background-image:
+      radial-gradient(ellipse 80% 60% at 50% -10%, hsla(43, 65%, 52%, 0.08), transparent),
+      radial-gradient(ellipse 60% 50% at 100% 100%, hsla(43, 65%, 52%, 0.05), transparent);
+    background-attachment: fixed;
+  }
+  ::selection {
+    @apply bg-gold-500/30 text-gold-100;
+  }
+}
+
+@layer utilities {
+  .text-gradient-gold {
+    background: linear-gradient(135deg, #f4e9b8 0%, #d4af37 50%, #86691a 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .border-gradient-gold {
+    border-image: linear-gradient(135deg, #d4af37, #86691a) 1;
+  }
+  .glass {
+    @apply bg-card/70 backdrop-blur-md border border-white/5;
+  }
+  .glow-gold {
+    box-shadow: 0 0 24px -4px hsla(43, 65%, 52%, 0.3);
+  }
+}

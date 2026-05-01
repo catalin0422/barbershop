@@ -1,0 +1,42 @@
+import { redirect } from "next/navigation";
+import { CalendarDays, LayoutDashboard, User } from "lucide-react";
+import { DashboardShell } from "@/components/dashboard-shell";
+import { createClient } from "@/lib/supabase/server";
+
+const NAV = [
+  { href: "/dashboard", label: "Programări", icon: CalendarDays },
+  { href: "/dashboard/profile", label: "Profilul meu", icon: User },
+  { href: "/", label: "Site public", icon: LayoutDashboard },
+];
+
+export default async function BarberLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login?next=/dashboard");
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("full_name, role")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (profile?.role !== "barber" && profile?.role !== "owner") {
+    redirect("/login");
+  }
+
+  return (
+    <DashboardShell
+      title="Dashboard frizer"
+      user={{ name: profile.full_name, role: profile.role }}
+      nav={NAV}
+    >
+      {children}
+    </DashboardShell>
+  );
+}
