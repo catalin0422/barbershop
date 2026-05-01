@@ -19,6 +19,9 @@ export const metadata: Metadata = {
   title: "BarberShop — Premium Grooming Studio",
   description:
     "Programări online, frizeri experimentați și o experiență de grooming premium.",
+  other: {
+    "format-detection": "telephone=no",
+  },
 };
 
 export default function RootLayout({

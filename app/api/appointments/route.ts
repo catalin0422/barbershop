@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { isSlotFree } from "@/lib/availability";
 import { sendBookingConfirmation, sendBarberNotification } from "@/lib/email";
 
@@ -76,7 +76,8 @@ export async function POST(request: Request) {
     );
   }
 
-  const { data, error } = await supabase
+  const admin = createServiceClient();
+  const { data, error } = await admin
     .from("appointments")
     .insert({
       service_id: body.service_id,
