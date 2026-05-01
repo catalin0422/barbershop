@@ -79,10 +79,13 @@ export async function DELETE(
 
   const admin = createServiceClient();
 
-  // First try to delete auth user (cascades to profile)
+  // Delete appointments linked to this barber first (foreign key constraint)
+  await admin.from("appointments").delete().eq("barber_id", params.id);
+
+  // Try to delete auth user (cascades to profile via DB trigger)
   const { error: authErr } = await admin.auth.admin.deleteUser(params.id);
   if (authErr) {
-    // Auth delete failed — delete profile row directly with service client
+    // Auth delete failed — delete profile row directly
     const { error: profileErr } = await admin
       .from("profiles")
       .delete()
