@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { SiteHeader } from "@/components/site-header";
 
-export async function SiteHeaderServer() {
+export async function SiteHeaderServer({ transparent }: { transparent?: boolean } = {}) {
   const supabase = createClient();
   const {
     data: { user },
@@ -19,9 +19,10 @@ export async function SiteHeaderServer() {
 
   return (
     <SiteHeader
+      transparent={transparent}
       authUser={
         user && profile
-          ? { name: profile.full_name, role: profile.role }
+          ? { name: (profile as any).full_name, role: (profile as any).role }
           : null
       }
     />

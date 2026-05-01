@@ -1,24 +1,13 @@
 import Link from "next/link";
 import {
   ArrowRight,
-  Award,
-  Calendar,
   Clock,
+  Play,
   Scissors,
-  Sparkles,
-  Star,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { SiteHeaderServer } from "@/components/site-header-server";
 import { SiteFooter } from "@/components/site-footer";
+import { SiteHeaderServer } from "@/components/site-header-server";
 import { createClient } from "@/lib/supabase/server";
 import { formatDuration, formatPrice } from "@/lib/utils";
 import type { Profile, Service } from "@/lib/types";
@@ -50,131 +39,95 @@ export default async function HomePage() {
   const { services, barbers } = await getLandingData();
 
   return (
-    <>
-      <SiteHeaderServer />
+    <div className="bg-black min-h-screen">
+      {/* Transparent header over hero */}
+      <div className="absolute top-0 left-0 right-0 z-50">
+        <SiteHeaderServer transparent />
+      </div>
+
       <main>
         <Hero />
-        <Highlights />
         <ServicesSection services={services} />
-        <BarbersSection barbers={barbers} />
+        {barbers.length > 0 && <BarbersSection barbers={barbers} />}
         <AboutSection />
         <CtaSection />
       </main>
       <SiteFooter />
-    </>
+    </div>
   );
 }
 
 function Hero() {
   return (
-    <section className="relative overflow-hidden">
-      <div className="container pt-16 pb-20 md:pt-24 md:pb-32">
-        <div className="grid md:grid-cols-2 gap-12 items-center">
-          <div className="animate-fade-in">
-            <Badge className="mb-6">
-              <Sparkles className="h-3 w-3 mr-1" /> Premium Grooming Studio
-            </Badge>
-            <h1 className="font-display text-5xl md:text-7xl font-bold leading-[1.05] tracking-tight">
-              Stilul tău,
-              <br />
-              <span className="text-gradient-gold">redefinit.</span>
-            </h1>
-            <p className="mt-6 text-lg text-muted-foreground max-w-lg">
-              Atelier de grooming pentru gentlemeni. Frizerii noștri combină
-              tehnica clasică cu eleganța modernă pentru o experiență
-              memorabilă.
+    <section className="relative min-h-screen flex flex-col bg-black overflow-hidden">
+      {/* Split layout */}
+      <div className="flex flex-1 min-h-screen">
+
+        {/* LEFT — text content */}
+        <div className="relative z-10 flex flex-col justify-end pb-20 px-8 md:px-16 lg:px-24 w-full md:w-1/2 bg-black">
+          <div className="max-w-lg pt-40">
+            <p className="text-xs tracking-[0.3em] uppercase text-white/40 mb-6">
+              Premium Grooming Studio
             </p>
-            <div className="mt-8 flex flex-col sm:flex-row gap-3">
-              <Button size="lg" asChild>
-                <Link href="/book">
-                  Programează-te <ArrowRight className="h-4 w-4" />
-                </Link>
-              </Button>
-              <Button size="lg" variant="outline" asChild>
-                <Link href="#services">Vezi serviciile</Link>
-              </Button>
-            </div>
-            <div className="mt-10 flex items-center gap-6 text-sm text-muted-foreground">
-              <div className="flex items-center gap-1">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star
-                    key={i}
-                    className="h-4 w-4 fill-gold-400 text-gold-400"
-                  />
-                ))}
-                <span className="ml-2">4.9 / 5</span>
-              </div>
-              <span>· 1.2k+ clienți mulțumiți</span>
-            </div>
+            <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.05] tracking-tight text-white">
+              Ridică-ți
+              <br />
+              stilul la
+              <br />
+              <span className="text-gradient-gold">alt nivel.</span>
+            </h1>
+            <Link
+              href="/book"
+              className="mt-10 inline-flex items-center gap-3 text-sm text-white/60 hover:text-white transition-colors group"
+            >
+              <span className="w-8 h-px bg-white/40 group-hover:w-12 group-hover:bg-white transition-all" />
+              Rezervă o consultație gratuită
+              <ArrowRight className="h-4 w-4" />
+            </Link>
           </div>
 
-          <div className="relative">
-            <div className="relative aspect-[4/5] rounded-2xl overflow-hidden border border-gold-500/20 glow-gold">
-              <div className="absolute inset-0 bg-gradient-to-br from-gold-900/20 via-transparent to-black" />
-              <div
-                className="absolute inset-0 bg-cover bg-center"
-                style={{
-                  backgroundImage:
-                    "url('https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=900&q=80')",
-                }}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent" />
-              <div className="absolute bottom-6 left-6 right-6 glass rounded-xl p-4 flex items-center gap-3">
-                <Award className="h-8 w-8 text-gold-400" />
-                <div>
-                  <div className="text-sm font-semibold">
-                    Maeștri ai foarfecii
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    +10 ani experiență per frizer
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="absolute -bottom-6 -left-6 -z-10 h-40 w-40 rounded-full bg-gold-500/30 blur-3xl" />
-            <div className="absolute -top-6 -right-6 -z-10 h-40 w-40 rounded-full bg-amber-700/30 blur-3xl" />
+          {/* Bottom watch videos */}
+          <div className="absolute bottom-10 right-0 md:right-auto md:left-24 flex items-center gap-3 text-xs text-white/40 hover:text-white/70 transition-colors cursor-pointer">
+            <span className="w-7 h-7 rounded-full border border-white/20 flex items-center justify-center">
+              <Play className="h-3 w-3 fill-current" />
+            </span>
+            Urmărește video-urile noastre
           </div>
         </div>
-      </div>
-    </section>
-  );
-}
 
-function Highlights() {
-  const items = [
-    {
-      icon: Scissors,
-      title: "Tehnică clasică",
-      desc: "Formare europeană, instrumentar profesional.",
-    },
-    {
-      icon: Calendar,
-      title: "Programări simple",
-      desc: "Rezervi în 30 secunde, online.",
-    },
-    {
-      icon: Clock,
-      title: "Punctualitate",
-      desc: "Timpul tău contează — onorăm fiecare slot.",
-    },
-    {
-      icon: Award,
-      title: "Produse premium",
-      desc: "Brand-uri selectate pentru păr și barbă.",
-    },
-  ];
-  return (
-    <section className="border-y border-white/5 bg-card/30">
-      <div className="container py-10 grid grid-cols-2 lg:grid-cols-4 gap-6">
-        {items.map(({ icon: Icon, title, desc }) => (
-          <div key={title} className="flex items-start gap-3">
-            <Icon className="h-5 w-5 text-gold-400 mt-1 shrink-0" />
-            <div>
-              <div className="text-sm font-semibold">{title}</div>
-              <div className="text-xs text-muted-foreground">{desc}</div>
-            </div>
+        {/* RIGHT — image */}
+        <div className="hidden md:block md:w-1/2 relative">
+          <div className="absolute inset-0">
+            <img
+              src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=1200&q=85"
+              alt="Barber"
+              className="h-full w-full object-cover object-center"
+            />
+            {/* Gradient fade left to black */}
+            <div className="absolute inset-0 bg-gradient-to-r from-black via-black/20 to-transparent" />
+            {/* Gradient fade bottom */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/40" />
           </div>
-        ))}
+        </div>
+
+        {/* Mobile: image as bg */}
+        <div
+          className="md:hidden absolute inset-0"
+          style={{
+            backgroundImage:
+              "url('https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=900&q=80')",
+            backgroundSize: "cover",
+            backgroundPosition: "center right",
+          }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-black/30" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/50" />
+        </div>
+      </div>
+
+      {/* Scroll hint */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center gap-2 text-white/20">
+        <div className="w-px h-12 bg-gradient-to-b from-white/20 to-transparent animate-pulse" />
       </div>
     </section>
   );
@@ -182,191 +135,199 @@ function Highlights() {
 
 function ServicesSection({ services }: { services: Service[] }) {
   return (
-    <section id="services" className="container py-20 md:py-28">
-      <div className="text-center max-w-2xl mx-auto mb-12">
-        <Badge variant="outline" className="mb-3">
-          Servicii
-        </Badge>
-        <h2 className="font-display text-4xl md:text-5xl font-bold tracking-tight">
-          Crafted for the <span className="text-gradient-gold">discerning</span>
-        </h2>
-        <p className="mt-4 text-muted-foreground">
-          Servicii executate de mâini experimentate, cu produse premium.
-        </p>
-      </div>
-
-      {services.length === 0 ? (
-        <EmptyServices />
-      ) : (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {services.map((s) => (
-            <Card
-              key={s.id}
-              className="group hover:border-gold-500/30 hover:shadow-gold-500/10 transition-all"
-            >
-              <CardHeader>
-                <div className="flex items-start justify-between gap-4">
-                  <CardTitle>{s.name}</CardTitle>
-                  <span className="font-display text-2xl text-gradient-gold whitespace-nowrap">
-                    {formatPrice(Number(s.price))}
-                  </span>
-                </div>
-                <CardDescription>
-                  {s.description ?? "Serviciu premium executat de echipa noastră."}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="flex items-center justify-between">
-                <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-                  <Clock className="h-3.5 w-3.5" />
-                  {formatDuration(s.duration_minutes)}
-                </span>
-                <Button variant="ghost" size="sm" asChild>
-                  <Link href={`/book?service=${s.id}`}>
-                    Rezervă <ArrowRight className="h-3.5 w-3.5" />
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
+    <section id="services" className="bg-black py-24 md:py-32">
+      <div className="max-w-7xl mx-auto px-8 md:px-16 lg:px-24">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
+          <div>
+            <p className="text-xs tracking-[0.3em] uppercase text-white/30 mb-4">
+              Serviciile noastre
+            </p>
+            <h2 className="font-display text-4xl md:text-5xl font-bold text-white leading-tight">
+              Crafted for the
+              <br />
+              <span className="text-gradient-gold">discerning.</span>
+            </h2>
+          </div>
+          <Button
+            asChild
+            variant="outline"
+            className="self-start md:self-auto border-white/10 text-white/70 hover:text-white hover:border-white/30 bg-transparent"
+          >
+            <Link href="/book">
+              Rezervă acum <ArrowRight className="h-4 w-4" />
+            </Link>
+          </Button>
         </div>
-      )}
+
+        {services.length === 0 ? (
+          <p className="text-white/30 text-sm">
+            Configurează Supabase și rulează schema.sql pentru a afișa serviciile.
+          </p>
+        ) : (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-px bg-white/5 border border-white/5 rounded-2xl overflow-hidden">
+            {services.map((s, i) => (
+              <Link
+                key={s.id}
+                href={`/book?service=${s.id}`}
+                className="group relative p-8 bg-black hover:bg-white/[0.03] transition-colors flex flex-col justify-between min-h-[200px]"
+              >
+                <div>
+                  <p className="text-xs text-white/30 mb-3">
+                    {String(i + 1).padStart(2, "0")}
+                  </p>
+                  <h3 className="font-display text-xl font-semibold text-white mb-2">
+                    {s.name}
+                  </h3>
+                  <p className="text-sm text-white/40 line-clamp-2">
+                    {s.description ?? "Serviciu executat de mâini experimentate."}
+                  </p>
+                </div>
+                <div className="mt-6 flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-xs text-white/30">
+                    <Clock className="h-3.5 w-3.5" />
+                    {formatDuration(s.duration_minutes)}
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="font-display text-xl text-gradient-gold">
+                      {formatPrice(Number(s.price))}
+                    </span>
+                    <ArrowRight className="h-4 w-4 text-white/20 group-hover:text-white/60 group-hover:translate-x-1 transition-all" />
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
     </section>
   );
 }
 
-function EmptyServices() {
-  return (
-    <Card className="text-center p-12">
-      <CardTitle className="mb-2">Catalogul de servicii se pregătește</CardTitle>
-      <CardDescription>
-        Configurează variabilele Supabase și execută <code>schema.sql</code>{" "}
-        pentru a popula serviciile.
-      </CardDescription>
-    </Card>
-  );
-}
-
 function BarbersSection({ barbers }: { barbers: Profile[] }) {
-  if (barbers.length === 0) return null;
   return (
-    <section
-      id="barbers"
-      className="container py-20 md:py-28 border-t border-white/5"
-    >
-      <div className="text-center max-w-2xl mx-auto mb-12">
-        <Badge variant="outline" className="mb-3">
-          Echipa
-        </Badge>
-        <h2 className="font-display text-4xl md:text-5xl font-bold tracking-tight">
-          Frizerii <span className="text-gradient-gold">noștri</span>
-        </h2>
-      </div>
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {barbers.map((b) => (
-          <Card key={b.id} className="overflow-hidden">
-            <div className="aspect-[4/3] relative bg-secondary/40">
-              {b.avatar_url ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={b.avatar_url}
-                  alt={b.full_name}
-                  className="absolute inset-0 h-full w-full object-cover"
-                />
-              ) : (
-                <div className="absolute inset-0 grid place-items-center text-4xl font-display text-gold-400/50">
-                  {b.full_name
-                    .split(" ")
-                    .map((s) => s[0])
-                    .join("")
-                    .slice(0, 2)
-                    .toUpperCase()}
+    <section id="barbers" className="bg-black py-24 md:py-32 border-t border-white/5">
+      <div className="max-w-7xl mx-auto px-8 md:px-16 lg:px-24">
+        <div className="mb-16">
+          <p className="text-xs tracking-[0.3em] uppercase text-white/30 mb-4">
+            Echipa
+          </p>
+          <h2 className="font-display text-4xl md:text-5xl font-bold text-white">
+            Frizerii <span className="text-gradient-gold">noștri.</span>
+          </h2>
+        </div>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {barbers.map((b) => (
+            <div key={b.id} className="group relative overflow-hidden rounded-xl">
+              <div className="aspect-[3/4] bg-white/5 relative">
+                {b.avatar_url ? (
+                  <img
+                    src={b.avatar_url}
+                    alt={b.full_name}
+                    className="absolute inset-0 h-full w-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
+                  />
+                ) : (
+                  <div className="absolute inset-0 grid place-items-center">
+                    <Scissors className="h-12 w-12 text-white/10" />
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
+                <div className="absolute bottom-6 left-6 right-6">
+                  <p className="font-display text-xl font-semibold text-white">
+                    {b.full_name}
+                  </p>
+                  {b.bio && (
+                    <p className="text-xs text-white/50 mt-1 line-clamp-2">
+                      {b.bio}
+                    </p>
+                  )}
                 </div>
-              )}
-              <div className="absolute inset-0 bg-gradient-to-t from-card to-transparent" />
+              </div>
             </div>
-            <CardHeader>
-              <CardTitle>{b.full_name}</CardTitle>
-              <CardDescription>
-                {b.bio ?? "Maestru al foarfecii și al briciului."}
-              </CardDescription>
-            </CardHeader>
-          </Card>
-        ))}
+          ))}
+        </div>
       </div>
     </section>
   );
 }
 
 function AboutSection() {
+  const stats = [
+    { value: "6+", label: "Ani experiență" },
+    { value: "8", label: "Frizeri" },
+    { value: "1.2k", label: "Clienți / lună" },
+  ];
+
   return (
-    <section
-      id="about"
-      className="container py-20 md:py-28 border-t border-white/5"
-    >
-      <div className="grid md:grid-cols-2 gap-12 items-center">
-        <div>
-          <Badge variant="outline" className="mb-3">
-            Despre noi
-          </Badge>
-          <h2 className="font-display text-4xl md:text-5xl font-bold tracking-tight">
-            O <span className="text-gradient-gold">tradiție</span>
-            <br />
-            modernă.
-          </h2>
-          <p className="mt-6 text-muted-foreground">
-            Am deschis MaisonBarber în 2019 cu o singură obsesie: să recreăm
-            ritualul clasic al frizeriei într-un spațiu contemporan. Fiecare
-            tunsoare începe cu o consultație, fiecare brici cu un prosop fierbinte,
-            fiecare client este tratat ca un oaspete.
-          </p>
-          <div className="mt-8 grid grid-cols-3 gap-4">
-            <Stat label="Ani experiență" value="6+" />
-            <Stat label="Frizeri" value="8" />
-            <Stat label="Clienți / lună" value="1.2k" />
+    <section id="about" className="bg-black py-24 md:py-32 border-t border-white/5">
+      <div className="max-w-7xl mx-auto px-8 md:px-16 lg:px-24">
+        <div className="grid md:grid-cols-2 gap-16 items-center">
+          {/* Image */}
+          <div className="relative aspect-[4/5] rounded-2xl overflow-hidden order-last md:order-first">
+            <img
+              src="https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=900&q=80"
+              alt="Interior salon"
+              className="absolute inset-0 h-full w-full object-cover grayscale"
+            />
+            <div className="absolute inset-0 bg-gradient-to-tr from-black/60 via-transparent to-transparent" />
           </div>
-        </div>
-        <div className="relative aspect-square rounded-2xl overflow-hidden border border-gold-500/20">
-          <div
-            className="absolute inset-0 bg-cover bg-center"
-            style={{
-              backgroundImage:
-                "url('https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=900&q=80')",
-            }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-tr from-background via-transparent to-transparent" />
+
+          {/* Text */}
+          <div>
+            <p className="text-xs tracking-[0.3em] uppercase text-white/30 mb-4">
+              Despre noi
+            </p>
+            <h2 className="font-display text-4xl md:text-5xl font-bold text-white leading-tight">
+              O <span className="text-gradient-gold">tradiție</span>
+              <br />
+              modernă.
+            </h2>
+            <p className="mt-8 text-white/50 leading-relaxed">
+              Am deschis MaisonBarber în 2019 cu o singură obsesie: să recreăm
+              ritualul clasic al frizeriei într-un spațiu contemporan. Fiecare
+              tunsoare începe cu o consultație, fiecare brici cu un prosop
+              fierbinte, fiecare client este tratat ca un oaspete.
+            </p>
+            <div className="mt-12 grid grid-cols-3 gap-8 border-t border-white/5 pt-10">
+              {stats.map(({ value, label }) => (
+                <div key={label}>
+                  <div className="font-display text-3xl md:text-4xl text-gradient-gold">
+                    {value}
+                  </div>
+                  <div className="text-xs text-white/30 mt-1">{label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </section>
   );
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-lg border border-white/5 bg-card/50 p-4">
-      <div className="font-display text-3xl text-gradient-gold">{value}</div>
-      <div className="text-xs text-muted-foreground mt-1">{label}</div>
-    </div>
-  );
-}
-
 function CtaSection() {
   return (
-    <section className="container pb-24">
-      <div className="relative overflow-hidden rounded-2xl border border-gold-500/30 bg-gradient-to-br from-gold-900/40 via-card to-card p-10 md:p-16 text-center">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_hsla(43,65%,52%,0.3),_transparent_60%)]" />
-        <div className="relative">
-          <h2 className="font-display text-3xl md:text-4xl font-bold tracking-tight">
-            Pregătit pentru o nouă imagine?
-          </h2>
-          <p className="mt-4 text-muted-foreground max-w-xl mx-auto">
-            Rezervă în mai puțin de 30 de secunde. Plata se face la salon.
-          </p>
-          <Button size="lg" className="mt-8" asChild>
-            <Link href="/book">
-              Programează-te acum <ArrowRight className="h-4 w-4" />
-            </Link>
-          </Button>
-        </div>
+    <section className="bg-black py-24 md:py-32 border-t border-white/5">
+      <div className="max-w-7xl mx-auto px-8 md:px-16 lg:px-24 text-center">
+        <p className="text-xs tracking-[0.3em] uppercase text-white/30 mb-6">
+          Urmează pasul
+        </p>
+        <h2 className="font-display text-4xl md:text-6xl font-bold text-white leading-tight">
+          Pregătit pentru o
+          <br />
+          <span className="text-gradient-gold">nouă imagine?</span>
+        </h2>
+        <p className="mt-6 text-white/40 max-w-md mx-auto">
+          Rezervă în mai puțin de 30 de secunde. Plata se face la salon.
+        </p>
+        <Link
+          href="/book"
+          className="mt-10 inline-flex items-center gap-3 text-sm text-white/60 hover:text-white transition-colors group"
+        >
+          <span className="w-8 h-px bg-white/30 group-hover:w-16 group-hover:bg-gold-400 transition-all duration-300" />
+          Programează-te acum
+          <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+        </Link>
       </div>
     </section>
   );

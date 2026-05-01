@@ -22,9 +22,10 @@ interface AuthUser {
 
 interface Props {
   authUser?: AuthUser | null;
+  transparent?: boolean;
 }
 
-export function SiteHeader({ authUser }: Props) {
+export function SiteHeader({ authUser, transparent }: Props) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
@@ -65,7 +66,12 @@ export function SiteHeader({ authUser }: Props) {
     );
 
   return (
-    <header className="sticky top-0 z-40 border-b border-white/5 bg-background/70 backdrop-blur-xl">
+    <header className={cn(
+      "z-40 w-full",
+      transparent
+        ? "bg-transparent border-transparent"
+        : "sticky top-0 border-b border-white/5 bg-background/70 backdrop-blur-xl"
+    )}>
       <div className="container flex h-16 items-center justify-between">
         <Link href="/" className="flex items-center gap-2 group">
           <span className="grid h-9 w-9 place-items-center rounded-md bg-gradient-to-br from-gold-400 to-gold-700 text-gold-900 shadow-lg shadow-gold-500/30 group-hover:shadow-gold-500/50 transition-shadow">
