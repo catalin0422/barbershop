@@ -22,6 +22,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { AppointmentsBarChart, RevenueLineChart, StatusPieChart } from "@/components/admin/stats-charts";
 import { createClient } from "@/lib/supabase/server";
 import { formatPrice } from "@/lib/utils";
 import type { AppointmentStatus } from "@/lib/types";
@@ -35,7 +36,12 @@ async function loadStats() {
   const endOfDay = new Date(startOfDay);
   endOfDay.setDate(endOfDay.getDate() + 1);
 
-  const [todays, all, recent] = await Promise.all([
+  // Last 30 days for charts
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 29);
+  thirtyDaysAgo.setHours(0, 0, 0, 0);
+
+  const [todays, all, recent, last30] = await Promise.all([
     supabase
       .from("appointments")
       .select("id, status")
@@ -49,6 +55,11 @@ async function loadStats() {
       )
       .order("start_time", { ascending: false })
       .limit(8),
+    supabase
+      .from("appointments")
+      .select("start_time, status, service:services(price)")
+      .gte("start_time", thirtyDaysAgo.toISOString())
+      .neq("status", "cancelled"),
   ]);
 
   const counts = (rows: { status: AppointmentStatus }[] | null) =>
@@ -57,44 +68,64 @@ async function loadStats() {
       return acc;
     }, {});
 
+  // Build daily chart data (last 14 days shown in chart)
+  const dailyMap = new Map<string, { appointments: number; revenue: number }>();
+  for (let i = 13; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const key = d.toLocaleDateString("ro-RO", { day: "numeric", month: "short" });
+    dailyMap.set(key, { appointments: 0, revenue: 0 });
+  }
+  for (const apt of last30.data ?? []) {
+    const d = new Date((apt as any).start_time);
+    const key = d.toLocaleDateString("ro-RO", { day: "numeric", month: "short" });
+    if (dailyMap.has(key)) {
+      const entry = dailyMap.get(key)!;
+      entry.appointments += 1;
+      entry.revenue += Number((apt as any).service?.price ?? 0);
+    }
+  }
+  const dailyData = Array.from(dailyMap.entries()).map(([day, v]) => ({
+    day,
+    ...v,
+  }));
+
+  const totalRevenue = (all.data ?? []).reduce((sum, a: any) => {
+    if (a.status === "completed") return sum;
+    return sum;
+  }, 0);
+
   return {
     today: todays.data ?? [],
     todayCounts: counts(todays.data),
     allCounts: counts(all.data),
     totalCount: all.data?.length ?? 0,
     recent: recent.data ?? [],
+    dailyData,
   };
 }
 
 export default async function AdminOverviewPage() {
-  const { todayCounts, allCounts, totalCount, today, recent } =
+  const { todayCounts, allCounts, totalCount, today, recent, dailyData } =
     await loadStats();
 
   const stats = [
-    {
-      label: "Programări astăzi",
-      value: today.length,
-      icon: Calendar,
-    },
-    {
-      label: "Pending",
-      value: todayCounts.pending ?? 0,
-      icon: Hourglass,
-    },
-    {
-      label: "Confirmate",
-      value: todayCounts.confirmed ?? 0,
-      icon: CheckCircle2,
-    },
-    {
-      label: "Total all-time",
-      value: totalCount,
-      icon: TrendingUp,
-    },
+    { label: "Programări astăzi", value: today.length, icon: Calendar },
+    { label: "Pending azi", value: todayCounts.pending ?? 0, icon: Hourglass },
+    { label: "Confirmate azi", value: todayCounts.confirmed ?? 0, icon: CheckCircle2 },
+    { label: "Total all-time", value: totalCount, icon: TrendingUp },
   ];
 
+  const pieData = [
+    { name: "Pending", value: allCounts.pending ?? 0, color: "#f59e0b" },
+    { name: "Confirmed", value: allCounts.confirmed ?? 0, color: "#d4af37" },
+    { name: "Completed", value: allCounts.completed ?? 0, color: "#10b981" },
+    { name: "Cancelled", value: allCounts.cancelled ?? 0, color: "#ef4444" },
+  ].filter((d) => d.value > 0);
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
+      {/* KPI cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map(({ label, value, icon: Icon }) => (
           <Card key={label}>
@@ -109,43 +140,60 @@ export default async function AdminOverviewPage() {
         ))}
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Distribuție statusuri</CardTitle>
-          <CardDescription>Toate programările</CardDescription>
-        </CardHeader>
-        <CardContent className="grid sm:grid-cols-4 gap-3">
-          <StatusTile
-            label="Pending"
-            value={allCounts.pending ?? 0}
-            icon={Hourglass}
-            tone="warning"
-          />
-          <StatusTile
-            label="Confirmate"
-            value={allCounts.confirmed ?? 0}
-            icon={Clock}
-            tone="default"
-          />
-          <StatusTile
-            label="Finalizate"
-            value={allCounts.completed ?? 0}
-            icon={CheckCircle2}
-            tone="success"
-          />
-          <StatusTile
-            label="Anulate"
-            value={allCounts.cancelled ?? 0}
-            icon={XCircle}
-            tone="destructive"
-          />
-        </CardContent>
-      </Card>
+      {/* Charts row */}
+      <div className="grid gap-4 lg:grid-cols-3">
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <CardTitle>Programări / zi</CardTitle>
+            <CardDescription>Ultimele 14 zile</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <AppointmentsBarChart data={dailyData} />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Distribuție statusuri</CardTitle>
+            <CardDescription>Toate programările</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {pieData.length > 0 ? (
+              <>
+                <StatusPieChart data={pieData} />
+                <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 justify-center">
+                  {pieData.map((d) => (
+                    <span key={d.name} className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                      <span className="inline-block h-2 w-2 rounded-full" style={{ background: d.color }} />
+                      {d.name} ({d.value})
+                    </span>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <div className="h-[200px] grid place-items-center text-sm text-muted-foreground">
+                Nicio programare încă
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
 
       <Card>
         <CardHeader>
+          <CardTitle>Venit / zi (RON)</CardTitle>
+          <CardDescription>Ultimele 14 zile (servicii confirmate + finalizate)</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <RevenueLineChart data={dailyData} />
+        </CardContent>
+      </Card>
+
+      {/* Recent activity table */}
+      <Card>
+        <CardHeader>
           <CardTitle>Activitate recentă</CardTitle>
-          <CardDescription>Ultimele programări creste</CardDescription>
+          <CardDescription>Ultimele 8 programări</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
@@ -162,10 +210,7 @@ export default async function AdminOverviewPage() {
             <TableBody>
               {recent.length === 0 && (
                 <TableRow>
-                  <TableCell
-                    colSpan={6}
-                    className="text-center text-muted-foreground"
-                  >
+                  <TableCell colSpan={6} className="text-center text-muted-foreground py-12">
                     Nu există programări încă.
                   </TableCell>
                 </TableRow>
@@ -174,9 +219,7 @@ export default async function AdminOverviewPage() {
                 <TableRow key={r.id}>
                   <TableCell>
                     <div className="font-medium">{r.client_name}</div>
-                    <div className="text-xs text-muted-foreground">
-                      {r.client_phone}
-                    </div>
+                    <div className="text-xs text-muted-foreground">{r.client_phone}</div>
                   </TableCell>
                   <TableCell>{r.barber?.full_name ?? "—"}</TableCell>
                   <TableCell>{r.service?.name ?? "—"}</TableCell>
@@ -198,33 +241,6 @@ export default async function AdminOverviewPage() {
           </Table>
         </CardContent>
       </Card>
-    </div>
-  );
-}
-
-function StatusTile({
-  label,
-  value,
-  icon: Icon,
-  tone,
-}: {
-  label: string;
-  value: number;
-  icon: React.ComponentType<{ className?: string }>;
-  tone: "default" | "warning" | "success" | "destructive";
-}) {
-  return (
-    <div className="rounded-lg border border-white/5 bg-background/40 p-4">
-      <div className="flex items-center justify-between">
-        <span className="text-xs uppercase tracking-wider text-muted-foreground">
-          {label}
-        </span>
-        <Icon className="h-4 w-4 text-muted-foreground" />
-      </div>
-      <div className="mt-2 flex items-end gap-2">
-        <div className="font-display text-3xl">{value}</div>
-        <Badge variant={tone}>·</Badge>
-      </div>
     </div>
   );
 }

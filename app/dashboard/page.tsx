@@ -7,6 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { AppointmentsTable } from "@/components/admin/appointments-table";
+import { WeeklyCalendar } from "@/components/dashboard/weekly-calendar";
 import { createClient } from "@/lib/supabase/server";
 import type { AppointmentStatus } from "@/lib/types";
 
@@ -19,8 +20,6 @@ export default async function BarberDashboardPage() {
   } = await supabase.auth.getUser();
   if (!user) return null;
 
-  // RLS already restricts to the barber's own appointments. For owners, we
-  // narrow the view to the rows where they're listed as the barber.
   const { data: appointments } = await supabase
     .from("appointments")
     .select(
@@ -44,29 +43,39 @@ export default async function BarberDashboardPage() {
     {},
   );
 
+  const calendarApts = (appointments ?? []).map((a: any) => ({
+    id: a.id,
+    client_name: a.client_name,
+    start_time: a.start_time,
+    end_time: a.end_time,
+    status: a.status,
+    service: a.service,
+  }));
+
   return (
     <div className="space-y-6">
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard label="Programări viitoare" value={upcoming.length} icon={Calendar} />
         <StatCard label="Pending" value={counts.pending ?? 0} icon={Hourglass} />
-        <StatCard
-          label="Confirmate"
-          value={counts.confirmed ?? 0}
-          icon={Clock}
-        />
-        <StatCard
-          label="Finalizate"
-          value={counts.completed ?? 0}
-          icon={CheckCircle2}
-        />
+        <StatCard label="Confirmate" value={counts.confirmed ?? 0} icon={Clock} />
+        <StatCard label="Finalizate" value={counts.completed ?? 0} icon={CheckCircle2} />
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Programările mele</CardTitle>
+          <CardTitle>Calendar săptămânal</CardTitle>
+          <CardDescription>Vizualizare grafică a programărilor tale.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <WeeklyCalendar appointments={calendarApts} />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Lista programărilor</CardTitle>
           <CardDescription>
-            Schimbă statusul fiecărei programări pentru a o confirma sau marca
-            drept finalizată.
+            Schimbă statusul fiecărei programări pentru a o confirma sau finalizată.
           </CardDescription>
         </CardHeader>
         <CardContent>

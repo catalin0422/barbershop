@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { isSlotFree } from "@/lib/availability";
+import { sendBookingConfirmation, sendBarberNotification } from "@/lib/email";
 
 export const dynamic = "force-dynamic";
 
@@ -31,20 +32,26 @@ export async function POST(request: Request) {
   ];
   for (const k of required) {
     if (!body[k] || String(body[k]).trim() === "") {
-      return NextResponse.json(
-        { error: `${k} is required` },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: `${k} is required` }, { status: 400 });
     }
   }
 
   const supabase = createClient();
 
-  const { data: service, error: svcErr } = await supabase
-    .from("services")
-    .select("duration_minutes, is_active")
-    .eq("id", body.service_id)
-    .maybeSingle();
+  const [{ data: service, error: svcErr }, { data: barberProfile }] =
+    await Promise.all([
+      supabase
+        .from("services")
+        .select("name, duration_minutes, price, is_active")
+        .eq("id", body.service_id)
+        .maybeSingle(),
+      supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", body.barber_id)
+        .maybeSingle(),
+    ]);
+
   if (svcErr || !service || !service.is_active) {
     return NextResponse.json({ error: "service not found" }, { status: 404 });
   }
@@ -55,8 +62,6 @@ export async function POST(request: Request) {
   }
   const end = new Date(start.getTime() + service.duration_minutes * 60_000);
 
-  // Pre-validate against existing appointments. The DB also enforces this via
-  // trigger so any race is still safe.
   const { data: existing } = await supabase
     .from("appointments")
     .select("start_time, end_time, status")
@@ -99,6 +104,20 @@ export async function POST(request: Request) {
       },
       { status: isOverlap ? 409 : 500 },
     );
+  }
+
+  // Send emails async — don't block the response
+  if (body.client_email) {
+    sendBookingConfirmation({
+      appointmentId: data.id,
+      clientName: body.client_name,
+      clientEmail: body.client_email,
+      serviceName: service.name,
+      barberName: barberProfile?.full_name ?? "Frizerul nostru",
+      startTime: start.toISOString(),
+      durationMinutes: service.duration_minutes,
+      price: Number(service.price),
+    }).catch(console.error);
   }
 
   return NextResponse.json({ id: data.id }, { status: 201 });

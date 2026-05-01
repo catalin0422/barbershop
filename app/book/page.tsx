@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { SiteHeader } from "@/components/site-header";
+import { SiteHeaderServer } from "@/components/site-header-server";
 import { SiteFooter } from "@/components/site-footer";
 import { BookingWizard } from "@/components/booking/booking-wizard";
 import { createClient } from "@/lib/supabase/server";
@@ -37,7 +37,7 @@ export default async function BookPage({
 
   return (
     <>
-      <SiteHeader />
+      <SiteHeaderServer />
       <main className="container py-10 md:py-16 min-h-[80vh]">
         <div className="max-w-3xl mx-auto">
           <h1 className="font-display text-4xl md:text-5xl font-bold tracking-tight">

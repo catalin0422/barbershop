@@ -1,0 +1,10 @@
+{
+  "files.exclude": {
+    "**/.claude": true,
+    "**/.next": true,
+    "**/node_modules": true,
+    "**/.git": true,
+    "**/yarn.lock": true,
+    "**/next-env.d.ts": true
+  }
+}

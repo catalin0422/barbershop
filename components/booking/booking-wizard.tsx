@@ -54,6 +54,7 @@ export function BookingWizard({
   const [step, setStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
+  const [appointmentId, setAppointmentId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const [form, setForm] = useState<Form>({
@@ -111,6 +112,8 @@ export function BookingWizard({
         const body = await res.json().catch(() => ({}));
         throw new Error(body?.error ?? "Nu am putut salva programarea.");
       }
+      const json = await res.json();
+      setAppointmentId(json.id ?? null);
       setDone(true);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Eroare necunoscută");
@@ -119,7 +122,7 @@ export function BookingWizard({
     }
   }
 
-  if (done) return <SuccessPanel form={form} service={service} barber={barber} />;
+  if (done) return <SuccessPanel form={form} service={service} barber={barber} appointmentId={appointmentId} />;
 
   return (
     <div className="mt-10">
@@ -651,42 +654,73 @@ function SuccessPanel({
   form,
   service,
   barber,
+  appointmentId,
 }: {
   form: Form;
   service: Service | null;
   barber: Profile | null;
+  appointmentId: string | null;
 }) {
   const slot = form.slotStart ? new Date(form.slotStart) : null;
+  const site = typeof window !== "undefined" ? window.location.origin : "";
+  const qrText = appointmentId
+    ? `${site}/book/confirmation/${appointmentId}`
+    : `${site}/book`;
+  const qrSrc = `/api/qr?text=${encodeURIComponent(qrText)}`;
+
   return (
-    <div className="mt-10 rounded-xl border border-gold-500/30 bg-gradient-to-br from-gold-900/30 via-card to-card p-10 text-center animate-fade-in">
-      <CheckCircle2 className="h-12 w-12 text-gold-400 mx-auto" />
-      <h2 className="mt-4 font-display text-3xl">Programare confirmată</h2>
-      <p className="mt-2 text-muted-foreground">
-        Te așteptăm la salon. Te vom suna pentru confirmare.
-      </p>
-      <div className="mt-6 inline-block text-left rounded-lg border border-white/5 bg-background/40 p-4 text-sm">
-        <Row label="Serviciu" value={service?.name ?? "—"} />
-        <Row label="Frizer" value={barber?.full_name ?? "—"} />
-        <Row
-          label="Când"
-          value={
-            slot
-              ? `${slot.toLocaleDateString("ro-RO", {
-                  weekday: "long",
-                  day: "numeric",
-                  month: "long",
-                })} · ${slot.toLocaleTimeString("ro-RO", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}`
-              : "—"
-          }
-        />
-      </div>
-      <div className="mt-6">
-        <Button asChild>
-          <a href="/">Înapoi la pagina principală</a>
-        </Button>
+    <div className="mt-10 rounded-xl border border-gold-500/30 bg-gradient-to-br from-gold-900/30 via-card to-card p-8 md:p-10 animate-fade-in">
+      <div className="flex flex-col md:flex-row gap-8 items-center">
+        <div className="flex-1 text-center md:text-left">
+          <CheckCircle2 className="h-12 w-12 text-gold-400 mx-auto md:mx-0" />
+          <h2 className="mt-4 font-display text-3xl">Programare confirmată</h2>
+          <p className="mt-2 text-muted-foreground">
+            Te așteptăm la salon. Te vom suna pentru confirmare.
+          </p>
+          <div className="mt-6 inline-block text-left rounded-lg border border-white/5 bg-background/40 p-4 text-sm space-y-2">
+            <Row label="Serviciu" value={service?.name ?? "—"} />
+            <Row label="Frizer" value={barber?.full_name ?? "—"} />
+            <Row
+              label="Când"
+              value={
+                slot
+                  ? `${slot.toLocaleDateString("ro-RO", {
+                      weekday: "long",
+                      day: "numeric",
+                      month: "long",
+                    })} · ${slot.toLocaleTimeString("ro-RO", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}`
+                  : "—"
+              }
+            />
+            {service && (
+              <Row label="Total" value={formatPrice(Number(service.price))} />
+            )}
+          </div>
+          <div className="mt-6">
+            <Button asChild>
+              <a href="/">Înapoi la pagina principală</a>
+            </Button>
+          </div>
+        </div>
+
+        {/* QR code */}
+        <div className="flex flex-col items-center gap-2 shrink-0">
+          <div className="rounded-xl border border-gold-500/20 p-3 bg-background/60">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={qrSrc} alt="QR programare" width={160} height={160} className="rounded-lg" />
+          </div>
+          <p className="text-xs text-muted-foreground text-center max-w-[160px]">
+            Prezintă QR-ul la salon
+          </p>
+          {appointmentId && (
+            <p className="text-[10px] text-muted-foreground/60 font-mono">
+              #{appointmentId.slice(0, 8)}
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );
