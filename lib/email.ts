@@ -1,7 +1,10 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM = "MaisonBarber <noreply@maisonbarber.ro>";
+
+function getResend() {
+  return new Resend(process.env.RESEND_API_KEY);
+}
 const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
 export interface AppointmentEmailData {
@@ -33,7 +36,7 @@ export async function sendBookingConfirmation(data: AppointmentEmailData) {
     minute: "2-digit",
   });
 
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to: data.clientEmail,
     subject: `Confirmare programare — ${data.serviceName} · ${dateStr}`,
@@ -99,7 +102,7 @@ export async function sendBarberNotification(data: AppointmentEmailData & { barb
   const dateStr = date.toLocaleDateString("ro-RO", { weekday: "long", day: "numeric", month: "long" });
   const timeStr = date.toLocaleTimeString("ro-RO", { hour: "2-digit", minute: "2-digit" });
 
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to: data.barberEmail,
     subject: `Programare nouă — ${data.clientName} · ${timeStr}`,
