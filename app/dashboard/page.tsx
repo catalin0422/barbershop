@@ -1,4 +1,4 @@
-import { Calendar, CheckCircle2, Clock, Hourglass } from "lucide-react";
+import { Calendar, CheckCircle2, Clock, XCircle } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -28,11 +28,23 @@ export default async function BarberDashboardPage() {
     .eq("barber_id", user.id)
     .order("start_time", { ascending: true });
 
+  const now = new Date();
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const todayEnd = new Date(todayStart.getTime() + 86400_000);
+
   const upcoming =
     appointments?.filter(
       (a: any) =>
-        a.status !== "cancelled" && new Date(a.start_time) >= new Date(),
+        a.status !== "cancelled" && new Date(a.start_time) >= now,
     ) ?? [];
+
+  const todayCount =
+    appointments?.filter(
+      (a: any) =>
+        a.status !== "cancelled" &&
+        new Date(a.start_time) >= todayStart &&
+        new Date(a.start_time) < todayEnd,
+    ).length ?? 0;
 
   const counts = (appointments ?? []).reduce<Record<string, number>>(
     (acc, a: any) => {
@@ -55,10 +67,10 @@ export default async function BarberDashboardPage() {
   return (
     <div className="space-y-6">
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Programări viitoare" value={upcoming.length} icon={Calendar} />
-        <StatCard label="Pending" value={counts.pending ?? 0} icon={Hourglass} />
-        <StatCard label="Confirmate" value={counts.confirmed ?? 0} icon={Clock} />
+        <StatCard label="Viitoare" value={upcoming.length} icon={Calendar} />
+        <StatCard label="Azi" value={todayCount} icon={Clock} />
         <StatCard label="Finalizate" value={counts.completed ?? 0} icon={CheckCircle2} />
+        <StatCard label="Anulate" value={counts.cancelled ?? 0} icon={XCircle} />
       </div>
 
       <Card>

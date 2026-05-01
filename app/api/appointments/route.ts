@@ -88,7 +88,7 @@ export async function POST(request: Request) {
       client_phone: body.client_phone,
       client_email: body.client_email ?? null,
       notes: body.notes ?? null,
-      status: "pending",
+      status: "confirmed",
     })
     .select("id")
     .single();
