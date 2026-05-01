@@ -138,8 +138,16 @@ export function BarbersManager({ profiles }: { profiles: Profile[] }) {
 
   async function remove(id: string) {
     if (!confirm("Sigur ștergi acest profil?")) return;
+    setBusy(true);
+    setError(null);
     const res = await fetch(`/api/barbers/${id}`, { method: "DELETE" });
-    if (res.ok) startTransition(() => router.refresh());
+    setBusy(false);
+    if (!res.ok) {
+      const j = await res.json().catch(() => ({}));
+      setError(j.error ?? "Eroare la ștergere. Verifică că SUPABASE_SERVICE_ROLE_KEY e setat în Vercel.");
+      return;
+    }
+    startTransition(() => router.refresh());
   }
 
   const canSave =
@@ -157,6 +165,11 @@ export function BarbersManager({ profiles }: { profiles: Profile[] }) {
           <UserPlus className="h-4 w-4" /> Cont nou
         </Button>
       </div>
+      {error && !open && (
+        <p className="mb-4 text-sm text-red-400 border border-red-500/30 bg-red-500/10 rounded-md p-2">
+          {error}
+        </p>
+      )}
 
       <Table>
         <TableHeader>

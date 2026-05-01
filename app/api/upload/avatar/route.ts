@@ -8,6 +8,13 @@ const MAX_SIZE = 2 * 1024 * 1024; // 2 MB
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 export async function POST(request: Request) {
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    return NextResponse.json(
+      { error: "Server misconfigurat: SUPABASE_SERVICE_ROLE_KEY lipsește din variabilele de mediu Vercel." },
+      { status: 500 },
+    );
+  }
+
   // Verify auth with regular client
   const supabase = createClient();
   const {
@@ -42,6 +49,9 @@ export async function POST(request: Request) {
 
   // Use service client for storage upload to bypass RLS/bucket policies
   const admin = createServiceClient();
+
+  // Ensure the bucket exists (creates it if missing, ignores error if it already exists)
+  await admin.storage.createBucket(BUCKET, { public: true }).catch(() => {});
 
   const { error: uploadErr } = await admin.storage
     .from(BUCKET)

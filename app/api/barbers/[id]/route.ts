@@ -22,6 +22,13 @@ export async function PATCH(
   request: Request,
   { params }: { params: { id: string } },
 ) {
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    return NextResponse.json(
+      { error: "Server misconfigurat: SUPABASE_SERVICE_ROLE_KEY lipsește din Vercel." },
+      { status: 500 },
+    );
+  }
+
   const auth = await requireOwner();
   if (!auth.ok) {
     return NextResponse.json({ error: "forbidden" }, { status: auth.status });
@@ -58,6 +65,13 @@ export async function DELETE(
   _request: Request,
   { params }: { params: { id: string } },
 ) {
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    return NextResponse.json(
+      { error: "Server misconfigurat: SUPABASE_SERVICE_ROLE_KEY lipsește din Vercel." },
+      { status: 500 },
+    );
+  }
+
   const auth = await requireOwner();
   if (!auth.ok) {
     return NextResponse.json({ error: "forbidden" }, { status: auth.status });
