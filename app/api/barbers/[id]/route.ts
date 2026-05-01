@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createServiceClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
@@ -60,14 +60,21 @@ export async function DELETE(
   if (!auth.ok) {
     return NextResponse.json({ error: "forbidden" }, { status: auth.status });
   }
-  // Note: this only removes the profile row. The auth.users row must be
-  // deleted separately via the Supabase dashboard or admin API.
-  const { error } = await auth.supabase
-    .from("profiles")
-    .delete()
-    .eq("id", params.id);
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+
+  const admin = createServiceClient();
+
+  // Delete the auth user (cascade removes the profile row via FK or trigger)
+  const { error: authErr } = await admin.auth.admin.deleteUser(params.id);
+  if (authErr) {
+    // Fall back to profile-only delete if service key isn't configured
+    const { error: profileErr } = await auth.supabase
+      .from("profiles")
+      .delete()
+      .eq("id", params.id);
+    if (profileErr) {
+      return NextResponse.json({ error: profileErr.message }, { status: 400 });
+    }
   }
+
   return NextResponse.json({ ok: true });
 }

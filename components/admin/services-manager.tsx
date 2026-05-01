@@ -214,7 +214,7 @@ export function ServicesManager({ services }: { services: Service[] }) {
                 />
               </div>
               <div>
-                <Label htmlFor="price">Preț (RON)</Label>
+                <Label htmlFor="price">Preț (LEI)</Label>
                 <Input
                   id="price"
                   type="number"

@@ -28,7 +28,7 @@ export async function GET(request: Request) {
 
   if (!rpc.error && rpc.data) {
     return NextResponse.json({
-      slots: rpc.data.map((row) => row.slot_start),
+      slots: rpc.data.map((row: any) => row.slot_start),
     });
   }
 

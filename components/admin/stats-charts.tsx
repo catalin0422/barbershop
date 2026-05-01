@@ -74,7 +74,7 @@ export function RevenueLineChart({ data }: { data: DailyData[] }) {
         <Line
           type="monotone"
           dataKey="revenue"
-          name="Venit (RON)"
+          name="Venit (LEI)"
           stroke={GOLD}
           strokeWidth={2}
           dot={{ fill: GOLD, r: 3 }}

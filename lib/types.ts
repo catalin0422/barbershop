@@ -53,11 +53,13 @@ export interface Database {
         Row: Profile;
         Insert: Partial<Profile> & { id: string; full_name: string };
         Update: Partial<Profile>;
+        Relationships: [];
       };
       services: {
         Row: Service;
         Insert: Omit<Service, "id" | "created_at"> & { id?: string };
         Update: Partial<Service>;
+        Relationships: [];
       };
       appointments: {
         Row: Appointment;
@@ -69,8 +71,10 @@ export interface Database {
           end_time?: string;
         };
         Update: Partial<Appointment>;
+        Relationships: [];
       };
     };
+    Views: Record<string, never>;
     Functions: {
       get_available_slots: {
         Args: {
@@ -85,5 +89,7 @@ export interface Database {
       };
       is_owner: { Args: Record<string, never>; Returns: boolean };
     };
+    Enums: Record<string, never>;
+    CompositeTypes: Record<string, never>;
   };
 }

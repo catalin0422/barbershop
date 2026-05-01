@@ -18,8 +18,7 @@ export default async function AdminBarbersPage() {
         <CardHeader>
           <CardTitle>Frizeri</CardTitle>
           <CardDescription>
-            Gestionează profilurile frizerilor. Conturile noi sunt create de
-            owner direct în Supabase Auth — pagina aceasta editează profilul.
+            Creează conturi noi de frizer sau owner direct din aplicație și editează profilurile existente.
           </CardDescription>
         </CardHeader>
         <CardContent>

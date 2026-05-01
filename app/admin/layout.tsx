@@ -32,14 +32,14 @@ export default async function AdminLayout({
     .eq("id", user.id)
     .maybeSingle();
 
-  if (profile?.role !== "owner") {
-    redirect(profile?.role === "barber" ? "/dashboard" : "/login");
+  if ((profile as any)?.role !== "owner") {
+    redirect((profile as any)?.role === "barber" ? "/dashboard" : "/login");
   }
 
   return (
     <DashboardShell
       title="Admin"
-      user={{ name: profile.full_name, role: profile.role }}
+      user={{ name: (profile as any).full_name, role: (profile as any).role }}
       nav={NAV}
     >
       {children}

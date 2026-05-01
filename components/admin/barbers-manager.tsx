@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, Pencil, Trash2, UserPlus } from "lucide-react";
+import { Eye, EyeOff, Loader2, Pencil, Trash2, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -33,37 +33,54 @@ import {
 } from "@/components/ui/select";
 import type { Profile, UserRole } from "@/lib/types";
 
-interface FormState {
-  id: string | null;
+interface CreateForm {
+  mode: "create";
+  email: string;
+  password: string;
+  full_name: string;
+  role: UserRole;
+  bio: string;
+}
+
+interface EditForm {
+  mode: "edit";
+  id: string;
   full_name: string;
   role: UserRole;
   bio: string;
   avatar_url: string;
 }
 
-const EMPTY: FormState = {
-  id: null,
+type FormState = CreateForm | EditForm;
+
+const EMPTY_CREATE: CreateForm = {
+  mode: "create",
+  email: "",
+  password: "",
   full_name: "",
   role: "barber",
   bio: "",
-  avatar_url: "",
 };
 
 export function BarbersManager({ profiles }: { profiles: Profile[] }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState<FormState>(EMPTY);
+  const [form, setForm] = useState<FormState>(EMPTY_CREATE);
+  const [showPass, setShowPass] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
   function openCreate() {
-    setForm(EMPTY);
+    setForm(EMPTY_CREATE);
     setError(null);
+    setShowPass(false);
     setOpen(true);
   }
+
   function openEdit(p: Profile) {
     setForm({
+      mode: "edit",
       id: p.id,
       full_name: p.full_name,
       role: p.role,
@@ -74,26 +91,47 @@ export function BarbersManager({ profiles }: { profiles: Profile[] }) {
     setOpen(true);
   }
 
+  function updateField(key: string, value: any) {
+    setForm((f) => ({ ...f, [key]: value } as FormState));
+  }
+
   async function save() {
     setBusy(true);
     setError(null);
-    const url = form.id ? `/api/barbers/${form.id}` : "/api/barbers";
+
+    const isEdit = form.mode === "edit";
+    const url = isEdit ? `/api/barbers/${(form as EditForm).id}` : "/api/barbers";
+    const method = isEdit ? "PATCH" : "POST";
+
+    const body = isEdit
+      ? {
+          full_name: form.full_name,
+          role: form.role,
+          bio: (form as EditForm).bio,
+          avatar_url: (form as EditForm).avatar_url,
+        }
+      : {
+          email: (form as CreateForm).email,
+          password: (form as CreateForm).password,
+          full_name: form.full_name,
+          role: form.role,
+          bio: (form as CreateForm).bio,
+        };
+
     const res = await fetch(url, {
-      method: form.id ? "PATCH" : "POST",
+      method,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        full_name: form.full_name,
-        role: form.role,
-        bio: form.bio,
-        avatar_url: form.avatar_url,
-      }),
+      body: JSON.stringify(body),
     });
+
     setBusy(false);
+
     if (!res.ok) {
       const j = await res.json().catch(() => ({}));
       setError(j.error ?? "Eroare la salvare");
       return;
     }
+
     setOpen(false);
     startTransition(() => router.refresh());
   }
@@ -104,6 +142,11 @@ export function BarbersManager({ profiles }: { profiles: Profile[] }) {
     if (res.ok) startTransition(() => router.refresh());
   }
 
+  const canSave =
+    form.mode === "edit"
+      ? !!form.full_name.trim()
+      : !!(form.email.trim() && form.password.length >= 6 && form.full_name.trim());
+
   return (
     <>
       <div className="flex items-center justify-between mb-4">
@@ -111,9 +154,10 @@ export function BarbersManager({ profiles }: { profiles: Profile[] }) {
           {profiles.length} profile {pending && "(actualizare...)"}
         </span>
         <Button size="sm" onClick={openCreate}>
-          <UserPlus className="h-4 w-4" /> Profil nou
+          <UserPlus className="h-4 w-4" /> Cont nou
         </Button>
       </div>
+
       <Table>
         <TableHeader>
           <TableRow>
@@ -126,12 +170,8 @@ export function BarbersManager({ profiles }: { profiles: Profile[] }) {
         <TableBody>
           {profiles.length === 0 && (
             <TableRow>
-              <TableCell
-                colSpan={4}
-                className="text-center text-muted-foreground py-12"
-              >
-                Niciun profil. Adaugă-ți contul de owner sau creează frizeri în
-                Supabase Auth.
+              <TableCell colSpan={4} className="text-center text-muted-foreground py-12">
+                Niciun profil. Creează primul cont.
               </TableCell>
             </TableRow>
           )}
@@ -150,18 +190,10 @@ export function BarbersManager({ profiles }: { profiles: Profile[] }) {
               </TableCell>
               <TableCell className="text-right">
                 <div className="flex justify-end gap-1">
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    onClick={() => openEdit(p)}
-                  >
+                  <Button size="icon" variant="ghost" onClick={() => openEdit(p)}>
                     <Pencil className="h-4 w-4" />
                   </Button>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    onClick={() => remove(p.id)}
-                  >
+                  <Button size="icon" variant="ghost" onClick={() => remove(p.id)}>
                     <Trash2 className="h-4 w-4 text-red-400" />
                   </Button>
                 </div>
@@ -175,33 +207,72 @@ export function BarbersManager({ profiles }: { profiles: Profile[] }) {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {form.id ? "Editează profilul" : "Profil nou"}
+              {form.mode === "edit" ? "Editează profilul" : "Cont nou"}
             </DialogTitle>
             <DialogDescription>
-              {form.id
+              {form.mode === "edit"
                 ? "Modifică detaliile profilului."
-                : "Crează un profil pentru un cont auth existent."}
+                : "Creează un cont de frizer sau owner direct din aplicație."}
             </DialogDescription>
           </DialogHeader>
+
           <div className="space-y-4">
+            {/* Câmpuri doar la creare */}
+            {form.mode === "create" && (
+              <>
+                <div>
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={(form as CreateForm).email}
+                    onChange={(e) => updateField("email", e.target.value)}
+                    placeholder="frizer@salon.ro"
+                    className="mt-1.5"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="password">Parolă</Label>
+                  <div className="relative mt-1.5">
+                    <Input
+                      id="password"
+                      type={showPass ? "text" : "password"}
+                      value={(form as CreateForm).password}
+                      onChange={(e) => updateField("password", e.target.value)}
+                      placeholder="Minim 6 caractere"
+                      className="pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPass((v) => !v)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    >
+                      {showPass ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Comunicați parola frizerului după creare.
+                  </p>
+                </div>
+              </>
+            )}
+
             <div>
               <Label htmlFor="full_name">Nume complet</Label>
               <Input
                 id="full_name"
                 value={form.full_name}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, full_name: e.target.value }))
-                }
+                onChange={(e) => updateField("full_name", e.target.value)}
+                placeholder="Ion Popescu"
                 className="mt-1.5"
               />
             </div>
+
             <div>
               <Label>Rol</Label>
               <Select
                 value={form.role}
-                onValueChange={(v) =>
-                  setForm((f) => ({ ...f, role: v as UserRole }))
-                }
+                onValueChange={(v) => updateField("role", v as UserRole)}
               >
                 <SelectTrigger className="mt-1.5">
                   <SelectValue />
@@ -212,41 +283,45 @@ export function BarbersManager({ profiles }: { profiles: Profile[] }) {
                 </SelectContent>
               </Select>
             </div>
+
             <div>
               <Label htmlFor="bio">Bio</Label>
               <Textarea
                 id="bio"
-                value={form.bio}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, bio: e.target.value }))
-                }
+                value={form.mode === "create" ? (form as CreateForm).bio : (form as EditForm).bio}
+                onChange={(e) => updateField("bio", e.target.value)}
+                placeholder="Câteva cuvinte despre frizer..."
                 className="mt-1.5"
               />
             </div>
-            <div>
-              <Label htmlFor="avatar_url">Avatar URL</Label>
-              <Input
-                id="avatar_url"
-                value={form.avatar_url}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, avatar_url: e.target.value }))
-                }
-                className="mt-1.5"
-                placeholder="https://..."
-              />
-            </div>
+
+            {form.mode === "edit" && (
+              <div>
+                <Label htmlFor="avatar_url">Avatar URL</Label>
+                <Input
+                  id="avatar_url"
+                  value={(form as EditForm).avatar_url}
+                  onChange={(e) => updateField("avatar_url", e.target.value)}
+                  placeholder="https://..."
+                  className="mt-1.5"
+                />
+              </div>
+            )}
+
             {error && (
               <p className="text-sm text-red-400 border border-red-500/30 bg-red-500/10 rounded-md p-2">
                 {error}
               </p>
             )}
           </div>
+
           <DialogFooter>
             <Button variant="ghost" onClick={() => setOpen(false)}>
               Anulează
             </Button>
-            <Button onClick={save} disabled={busy || !form.full_name.trim()}>
-              {busy && <Loader2 className="h-4 w-4 animate-spin" />} Salvează
+            <Button onClick={save} disabled={busy || !canSave}>
+              {busy && <Loader2 className="h-4 w-4 animate-spin" />}
+              {form.mode === "edit" ? "Salvează" : "Creează contul"}
             </Button>
           </DialogFooter>
         </DialogContent>

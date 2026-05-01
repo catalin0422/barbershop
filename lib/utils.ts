@@ -5,12 +5,12 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function formatPrice(value: number, currency = "RON") {
-  return new Intl.NumberFormat("ro-RO", {
-    style: "currency",
-    currency,
-    maximumFractionDigits: 0,
-  }).format(value);
+export function formatPrice(value: number) {
+  return (
+    new Intl.NumberFormat("ro-RO", {
+      maximumFractionDigits: 0,
+    }).format(value) + " LEI"
+  );
 }
 
 export function formatDuration(minutes: number) {

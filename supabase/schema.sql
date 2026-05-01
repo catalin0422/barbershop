@@ -266,9 +266,9 @@ create policy appointments_owner_all on public.appointments
 -- ---------- SEED (optional) ------------------------------
 insert into public.services (name, duration_minutes, price, description)
 values
-  ('Classic Haircut',  30, 25.00, 'Precision cut, wash and styling.'),
-  ('Beard Trim',       20, 15.00, 'Sculpted beard with hot towel finish.'),
-  ('Cut + Beard',      50, 35.00, 'Full grooming package.'),
-  ('Hot Towel Shave',  40, 30.00, 'Traditional straight-razor shave.'),
-  ('Kids Cut',         25, 18.00, 'Patient, friendly cut for under-12s.')
+  ('Classic Haircut',  30, 100.00, 'Precision cut, wash and styling.'),
+  ('Beard Trim',       20,  60.00, 'Sculpted beard with hot towel finish.'),
+  ('Cut + Beard',      50, 150.00, 'Full grooming package.'),
+  ('Hot Towel Shave',  40, 120.00, 'Traditional straight-razor shave.'),
+  ('Kids Cut',         25,  80.00, 'Patient, friendly cut for under-12s.')
 on conflict do nothing;

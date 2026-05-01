@@ -26,14 +26,14 @@ export default async function BarberLayout({
     .eq("id", user.id)
     .maybeSingle();
 
-  if (profile?.role !== "barber" && profile?.role !== "owner") {
+  if ((profile as any)?.role !== "barber" && (profile as any)?.role !== "owner") {
     redirect("/login");
   }
 
   return (
     <DashboardShell
       title="Dashboard frizer"
-      user={{ name: profile.full_name, role: profile.role }}
+      user={{ name: (profile as any).full_name, role: (profile as any).role }}
       nav={NAV}
     >
       {children}

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createServiceClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
@@ -14,8 +14,8 @@ async function requireOwner() {
     .select("role")
     .eq("id", user.id)
     .maybeSingle();
-  if (profile?.role !== "owner") return { ok: false as const, status: 403 };
-  return { ok: true as const, supabase };
+  if ((profile as any)?.role !== "owner") return { ok: false as const, status: 403 };
+  return { ok: true as const };
 }
 
 export async function GET() {
@@ -30,36 +30,71 @@ export async function GET() {
   return NextResponse.json({ profiles: data });
 }
 
-// Profiles are auto-created on auth signup. This endpoint is used to "claim"
-// (upsert) a profile row before the owner has logged in for the first time,
-// or to bulk-seed test data. The id must come from an existing auth.users row.
 export async function POST(request: Request) {
   const auth = await requireOwner();
   if (!auth.ok) {
     return NextResponse.json({ error: "forbidden" }, { status: auth.status });
   }
+
   const body = (await request.json().catch(() => null)) as {
-    id?: string;
+    email?: string;
+    password?: string;
     full_name?: string;
     role?: "owner" | "barber";
     bio?: string;
     avatar_url?: string;
   } | null;
-  if (!body?.id || !body.full_name) {
+
+  if (!body?.email || !body.password || !body.full_name) {
     return NextResponse.json(
-      { error: "id and full_name are required" },
+      { error: "email, password și full_name sunt obligatorii" },
       { status: 400 },
     );
   }
-  const { error } = await auth.supabase.from("profiles").upsert({
-    id: body.id,
+
+  if (body.password.length < 6) {
+    return NextResponse.json(
+      { error: "Parola trebuie să aibă cel puțin 6 caractere" },
+      { status: 400 },
+    );
+  }
+
+  const admin = createServiceClient();
+
+  // Create the auth user
+  const { data: created, error: authErr } = await admin.auth.admin.createUser({
+    email: body.email,
+    password: body.password,
+    email_confirm: true, // skip email verification
+    user_metadata: {
+      full_name: body.full_name,
+      role: body.role ?? "barber",
+    },
+  });
+
+  if (authErr || !created.user) {
+    return NextResponse.json(
+      { error: authErr?.message ?? "Eroare la crearea contului" },
+      { status: 400 },
+    );
+  }
+
+  // Upsert profile (trigger auto-creates it, but we want to set the role immediately)
+  const { error: profileErr } = await admin.from("profiles").upsert({
+    id: created.user.id,
     full_name: body.full_name,
     role: body.role ?? "barber",
     bio: body.bio ?? null,
     avatar_url: body.avatar_url ?? null,
   });
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+
+  if (profileErr) {
+    // Auth user was created but profile failed — return partial success
+    return NextResponse.json(
+      { error: `Cont creat dar profilul a eșuat: ${profileErr.message}` },
+      { status: 207 },
+    );
   }
-  return NextResponse.json({ ok: true }, { status: 201 });
+
+  return NextResponse.json({ id: created.user.id }, { status: 201 });
 }

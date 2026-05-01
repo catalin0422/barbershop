@@ -181,7 +181,7 @@ export default async function AdminOverviewPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Venit / zi (RON)</CardTitle>
+          <CardTitle>Venit / zi (LEI)</CardTitle>
           <CardDescription>Ultimele 14 zile (servicii confirmate + finalizate)</CardDescription>
         </CardHeader>
         <CardContent>
