@@ -117,9 +117,8 @@ async function handlePost(request: Request) {
     );
   }
 
-  // Send emails async — don't block the response
   if (body.client_email) {
-    sendBookingConfirmation({
+    await sendBookingConfirmation({
       appointmentId: data.id,
       clientName: body.client_name,
       clientEmail: body.client_email,
