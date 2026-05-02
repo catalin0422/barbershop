@@ -29,7 +29,7 @@ async function getLandingData() {
     supabase
       .from("profiles")
       .select("id, full_name, role, bio, avatar_url, created_at, updated_at")
-      .eq("role", "barber")
+      .in("role", ["barber", "owner"])
       .limit(6),
   ]);
 
@@ -135,6 +135,11 @@ function Hero() {
       {/* Scroll hint */}
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center gap-2 text-white/20">
         <div className="w-px h-12 bg-gradient-to-b from-white/20 to-transparent animate-pulse" />
+      </div>
+
+      {/* Credit */}
+      <div className="absolute bottom-4 right-6 text-[10px] text-white/20 tracking-wide">
+        Realizat de Dogaru Catalin · +37360171888
       </div>
     </section>
   );

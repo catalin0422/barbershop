@@ -51,16 +51,26 @@ export function WeeklyCalendar({
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
+  function romDateStr(d: Date) {
+    return d.toLocaleDateString("sv", { timeZone: "Europe/Bucharest" });
+  }
+
   function aptsForDay(day: Date) {
-    const iso = day.toISOString().slice(0, 10);
+    const iso = romDateStr(day);
     return appointments.filter(
-      (a) => a.start_time.slice(0, 10) === iso && a.status !== "cancelled",
+      (a) => romDateStr(new Date(a.start_time)) === iso && a.status !== "cancelled",
     );
   }
 
   function topOffset(dt: Date) {
-    const h = dt.getHours() - HOURS[0];
-    const m = dt.getMinutes();
+    const parts = new Intl.DateTimeFormat("en", {
+      timeZone: "Europe/Bucharest",
+      hour: "numeric",
+      minute: "numeric",
+      hour12: false,
+    }).formatToParts(dt);
+    const h = parseInt(parts.find((p) => p.type === "hour")!.value) - HOURS[0];
+    const m = parseInt(parts.find((p) => p.type === "minute")!.value);
     return (h + m / 60) * HOUR_HEIGHT;
   }
 

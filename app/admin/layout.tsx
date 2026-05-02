@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import {
+  CalendarDays,
   CalendarRange,
   LayoutDashboard,
   Scissors,
@@ -15,6 +16,7 @@ const NAV = [
   { href: "/admin/barbers", label: "Frizeri", icon: Users },
   { href: "/admin/services", label: "Servicii", icon: Scissors },
   { href: "/admin/stats", label: "Statistici", icon: TrendingUp },
+  { href: "/dashboard", label: "Dashboard frizer", icon: CalendarDays },
 ];
 
 export default async function AdminLayout({

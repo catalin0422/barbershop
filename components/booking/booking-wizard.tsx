@@ -492,6 +492,7 @@ function DateTimeStep({
             {slots.map((s) => {
               const date = new Date(s);
               const label = date.toLocaleTimeString("ro-RO", {
+                timeZone: "Europe/Bucharest",
                 hour: "2-digit",
                 minute: "2-digit",
               });
@@ -608,6 +609,7 @@ function ConfirmStep({
             value={
               slot
                 ? slot.toLocaleDateString("ro-RO", {
+                    timeZone: "Europe/Bucharest",
                     weekday: "long",
                     day: "numeric",
                     month: "long",
@@ -620,6 +622,7 @@ function ConfirmStep({
             value={
               slot
                 ? slot.toLocaleTimeString("ro-RO", {
+                    timeZone: "Europe/Bucharest",
                     hour: "2-digit",
                     minute: "2-digit",
                   })
@@ -685,10 +688,12 @@ function SuccessPanel({
               value={
                 slot
                   ? `${slot.toLocaleDateString("ro-RO", {
+                      timeZone: "Europe/Bucharest",
                       weekday: "long",
                       day: "numeric",
                       month: "long",
                     })} · ${slot.toLocaleTimeString("ro-RO", {
+                      timeZone: "Europe/Bucharest",
                       hour: "2-digit",
                       minute: "2-digit",
                     })}`

@@ -1,6 +1,19 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { computeAvailableSlots } from "@/lib/availability";
+import { computeAvailableSlots, DEFAULT_HOURS } from "@/lib/availability";
+
+// Returns how many hours ahead of UTC Romania is on the given date (2 in winter, 3 in summer).
+function getRomaniaOffset(dateStr: string): number {
+  const d = new Date(`${dateStr}T12:00:00Z`);
+  const h = parseInt(
+    new Intl.DateTimeFormat("en", {
+      timeZone: "Europe/Bucharest",
+      hour: "numeric",
+      hour12: false,
+    }).format(d),
+  );
+  return h - 12;
+}
 
 export const dynamic = "force-dynamic";
 
@@ -30,7 +43,7 @@ export async function GET(request: Request) {
       .select("start_time, end_time, status")
       .eq("barber_id", barberId)
       .gte("start_time", `${day}T00:00:00.000Z`)
-      .lt("start_time", `${day}T23:59:59.999Z`),
+      .lt("start_time", new Date(new Date(`${day}T00:00:00Z`).getTime() + 86400_000).toISOString()),
     supabase
       .from("barber_schedules")
       .select("day_of_week, open_hour, close_hour")
@@ -67,11 +80,22 @@ export async function GET(request: Request) {
     hours = { openHour: workingDay.open_hour, closeHour: workingDay.close_hour, stepMinutes: 30 };
   }
 
+  // Business hours in the DB are Romania local time. Convert to UTC so that
+  // computeAvailableSlots (which calls setHours in UTC server time) produces
+  // the correct UTC timestamps.
+  const romOffset = getRomaniaOffset(day);
+  const baseHours = hours ?? DEFAULT_HOURS;
+  const utcHours = {
+    openHour: baseHours.openHour - romOffset,
+    closeHour: baseHours.closeHour - romOffset,
+    stepMinutes: baseHours.stepMinutes,
+  };
+
   const slots = computeAvailableSlots({
-    day: new Date(`${day}T00:00:00`),
+    day: new Date(`${day}T00:00:00Z`),
     durationMinutes: service.duration_minutes,
     existing,
-    hours,
+    hours: utcHours,
   });
 
   return NextResponse.json({ slots: slots.map((d) => d.toISOString()) });

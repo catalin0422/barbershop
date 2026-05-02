@@ -225,6 +225,7 @@ export default async function AdminOverviewPage() {
                   <TableCell>{r.service?.name ?? "—"}</TableCell>
                   <TableCell>
                     {new Date(r.start_time).toLocaleString("ro-RO", {
+                      timeZone: "Europe/Bucharest",
                       dateStyle: "short",
                       timeStyle: "short",
                     })}

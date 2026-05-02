@@ -143,6 +143,7 @@ export function AppointmentsTable({
               <TableCell>
                 <div>
                   {new Date(row.start_time).toLocaleDateString("ro-RO", {
+                    timeZone: "Europe/Bucharest",
                     weekday: "short",
                     day: "numeric",
                     month: "short",
@@ -150,6 +151,7 @@ export function AppointmentsTable({
                 </div>
                 <div className="text-xs text-muted-foreground">
                   {new Date(row.start_time).toLocaleTimeString("ro-RO", {
+                    timeZone: "Europe/Bucharest",
                     hour: "2-digit",
                     minute: "2-digit",
                   })}

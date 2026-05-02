@@ -1,13 +1,18 @@
 import { redirect } from "next/navigation";
-import { CalendarDays, CalendarOff, LayoutDashboard, User } from "lucide-react";
+import { CalendarDays, CalendarOff, LayoutDashboard, Settings, User } from "lucide-react";
 import { DashboardShell } from "@/components/dashboard-shell";
 import { createClient } from "@/lib/supabase/server";
 
-const NAV = [
+const BASE_NAV = [
   { href: "/dashboard", label: "Programări", icon: CalendarDays },
   { href: "/dashboard/schedule", label: "Programul meu", icon: CalendarOff },
   { href: "/dashboard/profile", label: "Profilul meu", icon: User },
   { href: "/", label: "Site public", icon: LayoutDashboard },
+];
+
+const OWNER_NAV = [
+  ...BASE_NAV,
+  { href: "/admin", label: "Admin Panel", icon: Settings },
 ];
 
 export default async function BarberLayout({
@@ -27,15 +32,17 @@ export default async function BarberLayout({
     .eq("id", user.id)
     .maybeSingle();
 
-  if ((profile as any)?.role !== "barber" && (profile as any)?.role !== "owner") {
+  const role = (profile as any)?.role;
+
+  if (role !== "barber" && role !== "owner") {
     redirect("/login");
   }
 
   return (
     <DashboardShell
       title="Dashboard frizer"
-      user={{ name: (profile as any).full_name, role: (profile as any).role }}
-      nav={NAV}
+      user={{ name: (profile as any).full_name, role }}
+      nav={role === "owner" ? OWNER_NAV : BASE_NAV}
     >
       {children}
     </DashboardShell>
