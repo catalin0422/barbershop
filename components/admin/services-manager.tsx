@@ -142,13 +142,13 @@ export function ServicesManager({ services }: { services: Service[] }) {
                 </div>
               </TableCell>
               <TableCell>{formatDuration(s.duration_minutes)}</TableCell>
-              <TableCell className="font-medium text-gold-300">
+              <TableCell className="font-medium text-zinc-900">
                 {formatPrice(Number(s.price))}
               </TableCell>
               <TableCell>
-                <Badge variant={s.is_active ? "success" : "secondary"}>
+                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${s.is_active ? "bg-zinc-900 text-white" : "bg-zinc-100 text-zinc-500"}`}>
                   {s.is_active ? "Activ" : "Inactiv"}
-                </Badge>
+                </span>
               </TableCell>
               <TableCell className="text-right">
                 <div className="flex justify-end gap-1">
@@ -246,7 +246,7 @@ export function ServicesManager({ services }: { services: Service[] }) {
                 onChange={(e) =>
                   setForm((f) => ({ ...f, is_active: e.target.checked }))
                 }
-                className="h-4 w-4 rounded border-border accent-gold-500"
+                className="h-4 w-4 rounded border-zinc-300 accent-zinc-900"
               />
               Activ (vizibil în pagina publică)
             </label>

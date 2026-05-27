@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { LoginForm } from "@/components/login-form";
-import { BarbershopLogo } from "@/components/barbershop-logo";
+import { ArrowLeft } from "lucide-react";
 
 export const metadata = {
   title: "Login — BarberShop",
@@ -12,36 +12,92 @@ export default function LoginPage({
   searchParams: { next?: string; error?: string };
 }) {
   return (
-    <main className="min-h-screen grid place-items-center px-4 py-12 relative">
-      <div className="absolute inset-0 -z-10 opacity-50 bg-[radial-gradient(ellipse_at_center,_hsla(43,65%,52%,0.15),_transparent_70%)]" />
+    <div className="min-h-screen flex">
 
-      <div className="w-full max-w-md">
-        <Link href="/" className="flex items-center gap-2 justify-center mb-8">
-          <BarbershopLogo size={44} />
-          <span className="font-display text-xl tracking-widest text-white">
-            BARBERSHOP
-          </span>
-        </Link>
+      {/* ── Stânga: imagine dark ── */}
+      <div className="hidden lg:flex lg:w-1/2 relative bg-black overflow-hidden flex-col justify-between p-14">
+        <img
+          src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=1200&q=85"
+          alt="Barbershop"
+          className="absolute inset-0 w-full h-full object-cover opacity-50"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/40" />
 
-        <div className="rounded-xl border border-white/5 bg-card/70 backdrop-blur-sm p-8 shadow-2xl shadow-black/30">
-          <h1 className="font-display text-2xl font-semibold tracking-tight">
-            Bun venit înapoi
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Autentifică-te pentru a accesa panoul de administrare.
-          </p>
-
-          <LoginForm next={searchParams.next} initialError={searchParams.error} />
+        {/* Logo */}
+        <div className="relative z-10">
+          <Link href="/">
+            <div className="font-display text-2xl tracking-[0.35em] text-white leading-none">
+              BARBERS
+            </div>
+            <div className="text-[0.55rem] tracking-[0.55em] text-white/50 uppercase mt-0.5">
+              Bucharest
+            </div>
+          </Link>
         </div>
 
-        <p className="mt-6 text-xs text-muted-foreground text-center">
-          Doar pentru personalul salonului. Clienții pot rezerva direct{" "}
-          <Link href="/book" className="text-gold-400 hover:underline">
-            aici
-          </Link>
-          .
-        </p>
+        {/* Tagline */}
+        <div className="relative z-10">
+          <h2 className="font-display text-5xl lg:text-6xl text-white uppercase leading-none">
+            Panoul
+            <br />
+            de control
+          </h2>
+          <p className="text-zinc-400 text-sm mt-4 max-w-xs leading-relaxed">
+            Gestionează programările, frizerii și statisticile salonului.
+          </p>
+        </div>
       </div>
-    </main>
+
+      {/* ── Dreapta: formular alb ── */}
+      <div className="flex-1 flex flex-col bg-white">
+
+        {/* Back link */}
+        <div className="px-8 lg:px-14 pt-8">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-[0.65rem] tracking-[0.15em] uppercase text-zinc-400 hover:text-zinc-900 transition-colors"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            Înapoi acasă
+          </Link>
+        </div>
+
+        {/* Form centered */}
+        <div className="flex-1 flex items-center justify-center px-8 lg:px-14 py-12">
+          <div className="w-full max-w-sm">
+
+            {/* Heading */}
+            <div className="mb-10">
+              <p className="text-[0.6rem] tracking-[0.3em] uppercase text-zinc-400 mb-4 font-sans">
+                /autentificare
+              </p>
+              <h1 className="font-display text-4xl md:text-5xl text-zinc-900 uppercase leading-none">
+                Bun venit
+                <br />
+                înapoi
+              </h1>
+              <p className="text-zinc-400 text-sm mt-3">
+                Doar pentru personalul salonului.
+              </p>
+            </div>
+
+            <LoginForm next={searchParams.next} initialError={searchParams.error} />
+
+            <p className="mt-8 text-xs text-zinc-400 text-center">
+              Ești client?{" "}
+              <Link href="/book" className="text-zinc-900 font-semibold hover:underline">
+                Rezervă direct aici →
+              </Link>
+            </p>
+          </div>
+        </div>
+
+        {/* Footer mic */}
+        <div className="px-8 lg:px-14 pb-8 text-[0.6rem] text-zinc-300 tracking-wide">
+          © {new Date().getFullYear()} BarberShop
+        </div>
+      </div>
+
+    </div>
   );
 }

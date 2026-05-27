@@ -145,10 +145,10 @@ function StatCard({
     <Card>
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <p className="text-sm text-muted-foreground">{label}</p>
-        <Icon className="h-4 w-4 text-gold-400" />
+        <Icon className="h-4 w-4 text-zinc-400" />
       </CardHeader>
       <CardContent>
-        <div className="font-display text-2xl text-white">{value}</div>
+        <div className="font-display text-2xl text-zinc-900">{value}</div>
         {sub && <p className="text-xs text-muted-foreground mt-1">{sub}</p>}
       </CardContent>
     </Card>

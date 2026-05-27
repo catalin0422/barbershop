@@ -134,8 +134,8 @@ export function ScheduleForm({ initialSchedule, initialBlocks }: Props) {
               className={cn(
                 "w-12 h-12 rounded-lg text-sm font-medium border transition-all",
                 activeDays.has(d.id)
-                  ? "border-gold-500 bg-gold-500/10 text-gold-300"
-                  : "border-border bg-secondary/30 text-muted-foreground hover:border-gold-500/40",
+                  ? "border-zinc-900 bg-zinc-900 text-white"
+                  : "border-zinc-200 bg-white text-zinc-500 hover:border-zinc-400",
               )}
             >
               {d.short}
@@ -192,9 +192,9 @@ export function ScheduleForm({ initialSchedule, initialBlocks }: Props) {
       </div>
 
       {/* Blocked periods */}
-      <div className="border-t border-white/5 pt-6 space-y-4">
+      <div className="border-t border-zinc-100 pt-6 space-y-4">
         <div>
-          <h3 className="text-sm font-medium text-white">Zile libere / Concediu</h3>
+          <h3 className="text-sm font-medium text-zinc-900">Zile libere / Concediu</h3>
           <p className="text-xs text-muted-foreground mt-0.5">
             Adaugă perioade în care nu ești disponibil. Clienții nu vor vedea sloturi în acele zile.
           </p>
@@ -203,9 +203,9 @@ export function ScheduleForm({ initialSchedule, initialBlocks }: Props) {
         {blocks.length > 0 && (
           <div className="space-y-2">
             {blocks.map((b) => (
-              <div key={b.id} className="flex items-center justify-between gap-3 rounded-lg border border-white/5 bg-secondary/20 px-3 py-2">
+              <div key={b.id} className="flex items-center justify-between gap-3 rounded-lg border border-zinc-100 bg-zinc-50 px-3 py-2">
                 <div className="text-sm">
-                  <span className="text-white">
+                  <span className="text-zinc-900">
                     {b.start_date === b.end_date
                       ? formatDate(b.start_date)
                       : `${formatDate(b.start_date)} — ${formatDate(b.end_date)}`}
@@ -227,7 +227,7 @@ export function ScheduleForm({ initialSchedule, initialBlocks }: Props) {
           </div>
         )}
 
-        <div className="space-y-3 rounded-lg border border-white/5 bg-secondary/10 p-4">
+        <div className="space-y-3 rounded-lg border border-zinc-100 bg-zinc-50/50 p-4">
           <div className="grid grid-cols-2 gap-3">
             <div>
               <Label className="text-xs">De la</Label>

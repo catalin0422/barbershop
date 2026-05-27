@@ -12,11 +12,9 @@ import {
   Scissors,
   User,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
 import { cn, formatDuration, formatPrice } from "@/lib/utils";
 import type { Profile, Service } from "@/lib/types";
 
@@ -30,8 +28,8 @@ interface Props {
 interface Form {
   serviceId: string | null;
   barberId: string | null;
-  day: string | null; // ISO date (yyyy-mm-dd)
-  slotStart: string | null; // ISO timestamptz
+  day: string | null;
+  slotStart: string | null;
   clientName: string;
   clientPhone: string;
   clientEmail: string;
@@ -122,13 +120,22 @@ export function BookingWizard({
     }
   }
 
-  if (done) return <SuccessPanel form={form} service={service} barber={barber} appointmentId={appointmentId} />;
+  if (done)
+    return (
+      <SuccessPanel
+        form={form}
+        service={service}
+        barber={barber}
+        appointmentId={appointmentId}
+      />
+    );
 
   return (
-    <div className="mt-10">
+    <div>
       <Stepper current={step} />
 
-      <div className="mt-8 rounded-xl border border-white/5 bg-card/60 backdrop-blur-sm p-6 md:p-8 shadow-2xl shadow-black/20 animate-fade-in">
+      {/* Step panel */}
+      <div className="mt-8 border border-zinc-200 rounded-2xl bg-white p-6 md:p-8 animate-fade-in">
         {step === 1 && (
           <ServiceStep
             services={services}
@@ -167,39 +174,47 @@ export function BookingWizard({
         )}
       </div>
 
-      <div className="mt-6 flex items-center justify-between">
-        <Button
-          variant="ghost"
+      {/* Navigation */}
+      <div className="mt-5 flex items-center justify-between">
+        <button
           onClick={() => setStep((s) => Math.max(1, s - 1))}
           disabled={step === 1 || submitting}
+          className="inline-flex items-center gap-2 border border-zinc-200 rounded-full text-zinc-500 px-5 py-2.5 text-[0.68rem] font-semibold tracking-[0.15em] uppercase hover:border-zinc-400 hover:text-zinc-900 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
         >
-          <ArrowLeft className="h-4 w-4" /> Înapoi
-        </Button>
+          <ArrowLeft className="h-3.5 w-3.5" /> Înapoi
+        </button>
+
         {step < 4 ? (
-          <Button
+          <button
             onClick={() => setStep((s) => s + 1)}
             disabled={!canAdvance()}
+            className="inline-flex items-center gap-2 bg-zinc-900 text-white px-6 py-2.5 rounded-full text-[0.68rem] font-semibold tracking-[0.15em] uppercase hover:bg-black transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
           >
-            Continuă <ArrowRight className="h-4 w-4" />
-          </Button>
+            Continuă <ArrowRight className="h-3.5 w-3.5" />
+          </button>
         ) : (
-          <Button onClick={submit} disabled={!canAdvance() || submitting}>
+          <button
+            onClick={submit}
+            disabled={!canAdvance() || submitting}
+            className="inline-flex items-center gap-2 bg-zinc-900 text-white px-6 py-2.5 rounded-full text-[0.68rem] font-semibold tracking-[0.15em] uppercase hover:bg-black transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+          >
             {submitting ? (
               <>
-                <Loader2 className="h-4 w-4 animate-spin" /> Se trimite...
+                <Loader2 className="h-3.5 w-3.5 animate-spin" /> Se trimite...
               </>
             ) : (
               <>
-                Confirmă programarea <Check className="h-4 w-4" />
+                Confirmă programarea <Check className="h-3.5 w-3.5" />
               </>
             )}
-          </Button>
+          </button>
         )}
       </div>
     </div>
   );
 }
 
+/* ─── Stepper ─────────────────────────────────────────────────── */
 function Stepper({ current }: { current: number }) {
   return (
     <ol className="flex items-center justify-between gap-2">
@@ -209,40 +224,30 @@ function Stepper({ current }: { current: number }) {
         const Icon = s.icon;
         return (
           <li key={s.id} className="flex-1 flex items-center gap-2">
-            <div
-              className={cn(
-                "flex items-center gap-2 transition-all",
-                active && "scale-105",
-              )}
-            >
+            <div className={cn("flex items-center gap-2", active && "scale-105 transition-transform")}>
               <div
                 className={cn(
                   "h-9 w-9 rounded-full grid place-items-center border transition-colors",
                   active
-                    ? "border-gold-500 bg-gold-500/10 text-gold-300"
+                    ? "border-zinc-900 bg-zinc-900 text-white"
                     : done
-                      ? "border-gold-500/50 bg-gold-500/20 text-gold-300"
-                      : "border-border bg-secondary/40 text-muted-foreground",
+                    ? "border-zinc-400 bg-zinc-100 text-zinc-600"
+                    : "border-zinc-200 bg-white text-zinc-300",
                 )}
               >
                 {done ? <Check className="h-4 w-4" /> : <Icon className="h-4 w-4" />}
               </div>
               <span
                 className={cn(
-                  "hidden sm:inline text-sm",
-                  active ? "text-foreground font-medium" : "text-muted-foreground",
+                  "hidden sm:inline text-xs tracking-wide uppercase",
+                  active ? "text-zinc-900 font-semibold" : "text-zinc-400",
                 )}
               >
                 {s.label}
               </span>
             </div>
             {i < STEPS.length - 1 && (
-              <div
-                className={cn(
-                  "flex-1 h-px",
-                  done ? "bg-gold-500/50" : "bg-border",
-                )}
-              />
+              <div className={cn("flex-1 h-px", done ? "bg-zinc-900" : "bg-zinc-200")} />
             )}
           </li>
         );
@@ -251,6 +256,7 @@ function Stepper({ current }: { current: number }) {
   );
 }
 
+/* ─── Step 1: Serviciu ────────────────────────────────────────── */
 function ServiceStep({
   services,
   selected,
@@ -260,20 +266,18 @@ function ServiceStep({
   selected: string | null;
   onSelect: (id: string) => void;
 }) {
-  if (services.length === 0) {
+  if (services.length === 0)
     return (
-      <p className="text-muted-foreground text-sm">
+      <p className="text-zinc-400 text-sm">
         Niciun serviciu disponibil. Contactează salonul.
       </p>
     );
-  }
+
   return (
     <div>
-      <h2 className="font-display text-2xl mb-1">Alege serviciul</h2>
-      <p className="text-sm text-muted-foreground mb-6">
-        Poți modifica selecția ulterior.
-      </p>
-      <div className="grid sm:grid-cols-2 gap-3">
+      <h2 className="font-display text-3xl text-zinc-900 uppercase mb-1">Alege serviciul</h2>
+      <p className="text-sm text-zinc-400 mb-6">Poți modifica selecția ulterior.</p>
+      <div className="grid sm:grid-cols-2 gap-2">
         {services.map((s) => {
           const active = selected === s.id;
           return (
@@ -281,22 +285,24 @@ function ServiceStep({
               key={s.id}
               onClick={() => onSelect(s.id)}
               className={cn(
-                "text-left p-4 rounded-lg border transition-all",
+                "text-left p-5 border rounded-xl transition-all",
                 active
-                  ? "border-gold-500 bg-gold-500/5 shadow-md shadow-gold-500/20"
-                  : "border-border bg-secondary/30 hover:border-gold-500/40",
+                  ? "border-zinc-900 bg-zinc-50"
+                  : "border-zinc-200 bg-white hover:border-zinc-400",
               )}
             >
               <div className="flex items-start justify-between gap-2">
-                <div className="font-medium">{s.name}</div>
-                <span className="text-gradient-gold font-display text-lg">
+                <div className="font-semibold text-zinc-900">{s.name}</div>
+                <span className="font-display text-lg text-zinc-900 shrink-0">
                   {formatPrice(Number(s.price))}
                 </span>
               </div>
-              <div className="mt-1 text-xs text-muted-foreground line-clamp-2">
-                {s.description}
-              </div>
-              <div className="mt-3 inline-flex items-center gap-1 text-xs text-muted-foreground">
+              {s.description && (
+                <div className="mt-1.5 text-xs text-zinc-400 line-clamp-2 leading-relaxed">
+                  {s.description}
+                </div>
+              )}
+              <div className="mt-3 inline-flex items-center gap-1.5 text-xs text-zinc-400">
                 <Clock className="h-3 w-3" />
                 {formatDuration(s.duration_minutes)}
               </div>
@@ -308,6 +314,7 @@ function ServiceStep({
   );
 }
 
+/* ─── Step 2: Frizer ──────────────────────────────────────────── */
 function BarberStep({
   barbers,
   selected,
@@ -317,20 +324,18 @@ function BarberStep({
   selected: string | null;
   onSelect: (id: string) => void;
 }) {
-  if (barbers.length === 0) {
+  if (barbers.length === 0)
     return (
-      <p className="text-muted-foreground text-sm">
-        Niciun frizer activ în acest moment.
-      </p>
+      <p className="text-zinc-400 text-sm">Niciun frizer activ în acest moment.</p>
     );
-  }
+
   return (
     <div>
-      <h2 className="font-display text-2xl mb-1">Alege frizerul</h2>
-      <p className="text-sm text-muted-foreground mb-6">
+      <h2 className="font-display text-3xl text-zinc-900 uppercase mb-1">Alege frizerul</h2>
+      <p className="text-sm text-zinc-400 mb-6">
         Toți frizerii noștri sunt experimentați. Alege preferatul tău.
       </p>
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
         {barbers.map((b) => {
           const active = selected === b.id;
           const initials = b.full_name
@@ -344,13 +349,13 @@ function BarberStep({
               key={b.id}
               onClick={() => onSelect(b.id)}
               className={cn(
-                "text-left p-4 rounded-lg border transition-all flex items-center gap-3",
+                "text-left p-4 border rounded-xl transition-all flex items-center gap-3",
                 active
-                  ? "border-gold-500 bg-gold-500/5 shadow-md shadow-gold-500/20"
-                  : "border-border bg-secondary/30 hover:border-gold-500/40",
+                  ? "border-zinc-900 bg-zinc-50"
+                  : "border-zinc-200 bg-white hover:border-zinc-400",
               )}
             >
-              <div className="h-12 w-12 rounded-full overflow-hidden bg-secondary grid place-items-center text-sm font-display text-gold-300 shrink-0">
+              <div className="h-11 w-11 overflow-hidden bg-zinc-100 grid place-items-center text-sm font-display text-zinc-600 shrink-0">
                 {b.avatar_url ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -363,10 +368,8 @@ function BarberStep({
                 )}
               </div>
               <div className="min-w-0">
-                <div className="font-medium truncate">{b.full_name}</div>
-                <div className="text-xs text-muted-foreground truncate">
-                  {b.bio ?? "Maestru al foarfecii"}
-                </div>
+                <div className="font-semibold text-zinc-900 truncate">{b.full_name}</div>
+                <div className="text-xs text-zinc-400 truncate">{b.bio ?? "Maestru al foarfecii"}</div>
               </div>
             </button>
           );
@@ -376,6 +379,7 @@ function BarberStep({
   );
 }
 
+/* ─── Step 3: Dată & Oră ─────────────────────────────────────── */
 function DateTimeStep({
   serviceId,
   barberId,
@@ -395,7 +399,6 @@ function DateTimeStep({
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
-  // Build the next 14 days
   const days = useMemo(() => {
     const out: { iso: string; label: string; weekday: string }[] = [];
     const today = new Date();
@@ -407,9 +410,7 @@ function DateTimeStep({
       out.push({
         iso,
         label: `${d.getDate()}`,
-        weekday: d
-          .toLocaleDateString("ro-RO", { weekday: "short" })
-          .replace(".", ""),
+        weekday: d.toLocaleDateString("ro-RO", { weekday: "short" }).replace(".", ""),
       });
     }
     return out;
@@ -420,9 +421,7 @@ function DateTimeStep({
     let aborted = false;
     setLoading(true);
     setErr(null);
-    fetch(
-      `/api/availability?service=${serviceId}&barber=${barberId}&day=${day}`,
-    )
+    fetch(`/api/availability?service=${serviceId}&barber=${barberId}&day=${day}`)
       .then((r) => r.json())
       .then((data) => {
         if (aborted) return;
@@ -433,19 +432,16 @@ function DateTimeStep({
         if (!aborted) setErr(e.message ?? "Eroare la încărcare");
       })
       .finally(() => !aborted && setLoading(false));
-    return () => {
-      aborted = true;
-    };
+    return () => { aborted = true; };
   }, [serviceId, barberId, day]);
 
   return (
     <div>
-      <h2 className="font-display text-2xl mb-1">Alege data și ora</h2>
-      <p className="text-sm text-muted-foreground mb-6">
-        Sloturile indisponibile nu apar în listă.
-      </p>
+      <h2 className="font-display text-3xl text-zinc-900 uppercase mb-1">Alege data și ora</h2>
+      <p className="text-sm text-zinc-400 mb-6">Sloturile indisponibile nu apar în listă.</p>
 
-      <div className="flex gap-2 overflow-x-auto pb-2 -mx-1 px-1 snap-x">
+      {/* Day picker */}
+      <div className="flex gap-1.5 overflow-x-auto pb-2 snap-x">
         {days.map((d) => {
           const active = day === d.iso;
           return (
@@ -453,42 +449,35 @@ function DateTimeStep({
               key={d.iso}
               onClick={() => onDayChange(d.iso)}
               className={cn(
-                "snap-start shrink-0 w-16 py-3 rounded-lg border text-center transition-all",
+                "snap-start shrink-0 w-14 py-3 border text-center transition-all",
                 active
-                  ? "border-gold-500 bg-gold-500/10 text-gold-200"
-                  : "border-border bg-secondary/30 hover:border-gold-500/40",
+                  ? "border-zinc-900 bg-zinc-900 text-white"
+                  : "border-zinc-200 bg-white text-zinc-600 hover:border-zinc-400",
               )}
             >
-              <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
-                {d.weekday}
-              </div>
-              <div className="font-display text-xl">{d.label}</div>
+              <div className="text-[9px] uppercase tracking-wider opacity-70">{d.weekday}</div>
+              <div className="font-display text-xl leading-tight">{d.label}</div>
             </button>
           );
         })}
       </div>
 
+      {/* Slot picker */}
       <div className="mt-6">
         {!day && (
-          <p className="text-sm text-muted-foreground">
-            Selectează o zi pentru a vedea sloturile.
-          </p>
+          <p className="text-sm text-zinc-400">Selectează o zi pentru a vedea sloturile.</p>
         )}
         {day && loading && (
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <div className="flex items-center gap-2 text-sm text-zinc-400">
             <Loader2 className="h-4 w-4 animate-spin" /> Se încarcă sloturile...
           </div>
         )}
-        {day && err && (
-          <p className="text-sm text-red-400">Eroare: {err}</p>
-        )}
+        {day && err && <p className="text-sm text-red-500">Eroare: {err}</p>}
         {day && !loading && !err && slots.length === 0 && (
-          <p className="text-sm text-muted-foreground">
-            Nu sunt sloturi disponibile pentru ziua selectată.
-          </p>
+          <p className="text-sm text-zinc-400">Nu sunt sloturi disponibile pentru ziua selectată.</p>
         )}
         {day && !loading && slots.length > 0 && (
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-1.5">
             {slots.map((s) => {
               const date = new Date(s);
               const label = date.toLocaleTimeString("ro-RO", {
@@ -502,10 +491,10 @@ function DateTimeStep({
                   key={s}
                   onClick={() => onSlotChange(s)}
                   className={cn(
-                    "py-2 rounded-md border text-sm transition-all",
+                    "py-2 border text-sm transition-all",
                     active
-                      ? "border-gold-500 bg-gold-500/15 text-gold-200"
-                      : "border-border bg-secondary/30 hover:border-gold-500/40",
+                      ? "border-zinc-900 bg-zinc-900 text-white"
+                      : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-400",
                   )}
                 >
                   {label}
@@ -519,6 +508,7 @@ function DateTimeStep({
   );
 }
 
+/* ─── Step 4: Confirmare ─────────────────────────────────────── */
 function ConfirmStep({
   form,
   service,
@@ -533,27 +523,31 @@ function ConfirmStep({
   error: string | null;
 }) {
   const slot = form.slotStart ? new Date(form.slotStart) : null;
+
   return (
     <div className="grid lg:grid-cols-[1fr_auto_1fr] gap-6">
+      {/* Form fields */}
       <div>
-        <h2 className="font-display text-2xl mb-1">Detaliile tale</h2>
-        <p className="text-sm text-muted-foreground mb-6">
-          Le folosim doar pentru a confirma programarea.
-        </p>
+        <h2 className="font-display text-3xl text-zinc-900 uppercase mb-1">Detaliile tale</h2>
+        <p className="text-sm text-zinc-400 mb-6">Le folosim doar pentru a confirma programarea.</p>
         <div className="space-y-4">
           <div>
-            <Label htmlFor="name">Nume complet *</Label>
+            <Label htmlFor="name" className="text-zinc-500 text-xs uppercase tracking-wider">
+              Nume complet *
+            </Label>
             <Input
               id="name"
               required
               value={form.clientName}
               onChange={(e) => onChange("clientName", e.target.value)}
               placeholder="Andrei Popescu"
-              className="mt-1.5"
+              className="mt-1.5 rounded-lg border-zinc-200 focus-visible:ring-zinc-900 text-zinc-900 placeholder:text-zinc-300"
             />
           </div>
           <div>
-            <Label htmlFor="phone">Telefon *</Label>
+            <Label htmlFor="phone" className="text-zinc-500 text-xs uppercase tracking-wider">
+              Telefon *
+            </Label>
             <Input
               id="phone"
               required
@@ -561,48 +555,53 @@ function ConfirmStep({
               value={form.clientPhone}
               onChange={(e) => onChange("clientPhone", e.target.value)}
               placeholder="07XX XXX XXX"
-              className="mt-1.5"
+              className="mt-1.5 rounded-lg border-zinc-200 focus-visible:ring-zinc-900 text-zinc-900 placeholder:text-zinc-300"
             />
           </div>
           <div>
-            <Label htmlFor="email">Email (opțional)</Label>
+            <Label htmlFor="email" className="text-zinc-500 text-xs uppercase tracking-wider">
+              Email (opțional)
+            </Label>
             <Input
               id="email"
               type="email"
               value={form.clientEmail}
               onChange={(e) => onChange("clientEmail", e.target.value)}
               placeholder="andrei@exemplu.ro"
-              className="mt-1.5"
+              className="mt-1.5 rounded-lg border-zinc-200 focus-visible:ring-zinc-900 text-zinc-900 placeholder:text-zinc-300"
             />
           </div>
           <div>
-            <Label htmlFor="notes">Note pentru frizer (opțional)</Label>
+            <Label htmlFor="notes" className="text-zinc-500 text-xs uppercase tracking-wider">
+              Note pentru frizer (opțional)
+            </Label>
             <Textarea
               id="notes"
               value={form.notes}
               onChange={(e) => onChange("notes", e.target.value)}
-              placeholder="Ex: prima vizită, păr lung, tunsoare scurtă în lateral..."
-              className="mt-1.5"
+              placeholder="Ex: prima vizită, păr lung, tunsoare scurtă..."
+              className="mt-1.5 rounded-lg border-zinc-200 focus-visible:ring-zinc-900 text-zinc-900 placeholder:text-zinc-300 resize-none"
             />
           </div>
         </div>
         {error && (
-          <p className="mt-3 text-sm text-red-400 border border-red-500/30 bg-red-500/10 rounded-md p-2">
+          <p className="mt-3 text-sm text-red-500 border border-red-200 bg-red-50 p-2">
             {error}
           </p>
         )}
       </div>
-      <div className="hidden lg:block w-px bg-border self-stretch" />
-      <aside className="lg:pl-2">
-        <h3 className="text-sm uppercase tracking-wider text-gold-400 font-semibold mb-3">
-          Sumar
+
+      {/* Divider */}
+      <div className="hidden lg:block w-px bg-zinc-200 self-stretch" />
+
+      {/* Summary */}
+      <aside>
+        <h3 className="text-[0.6rem] tracking-[0.25em] uppercase text-zinc-400 font-sans mb-4">
+          Sumar programare
         </h3>
-        <div className="space-y-3 rounded-lg border border-white/5 bg-background/40 p-4 text-sm">
+        <div className="border border-zinc-200 rounded-xl bg-zinc-50 p-5 text-sm space-y-3">
           <Row label="Serviciu" value={service?.name ?? "—"} />
-          <Row
-            label="Durată"
-            value={service ? formatDuration(service.duration_minutes) : "—"}
-          />
+          <Row label="Durată" value={service ? formatDuration(service.duration_minutes) : "—"} />
           <Row label="Frizer" value={barber?.full_name ?? "—"} />
           <Row
             label="Data"
@@ -629,30 +628,32 @@ function ConfirmStep({
                 : "—"
             }
           />
-          <div className="border-t border-border/50 pt-3 flex justify-between items-baseline">
-            <span className="text-muted-foreground">Total</span>
-            <span className="font-display text-2xl text-gradient-gold">
+          <div className="border-t border-zinc-200 pt-3 flex justify-between items-baseline">
+            <span className="text-zinc-400 text-xs uppercase tracking-wider">Total</span>
+            <span className="font-display text-2xl text-zinc-900">
               {service ? formatPrice(Number(service.price)) : "—"}
             </span>
           </div>
-          <Badge variant="warning" className="w-full justify-center">
+          <div className="bg-zinc-900 text-white text-center text-[0.65rem] tracking-[0.15em] uppercase py-2">
             Plata se face la salon
-          </Badge>
+          </div>
         </div>
       </aside>
     </div>
   );
 }
 
+/* ─── Row helper ─────────────────────────────────────────────── */
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between gap-4">
-      <span className="text-muted-foreground">{label}</span>
-      <span className="font-medium text-right">{value}</span>
+      <span className="text-zinc-400">{label}</span>
+      <span className="font-medium text-zinc-900 text-right">{value}</span>
     </div>
   );
 }
 
+/* ─── Success panel ──────────────────────────────────────────── */
 function SuccessPanel({
   form,
   service,
@@ -672,15 +673,17 @@ function SuccessPanel({
   const qrSrc = `/api/qr?text=${encodeURIComponent(qrText)}`;
 
   return (
-    <div className="mt-10 rounded-xl border border-gold-500/30 bg-gradient-to-br from-gold-900/30 via-card to-card p-8 md:p-10 animate-fade-in">
+    <div className="border border-zinc-200 rounded-2xl bg-white p-8 md:p-10 animate-fade-in">
       <div className="flex flex-col md:flex-row gap-8 items-center">
         <div className="flex-1 text-center md:text-left">
-          <CheckCircle2 className="h-12 w-12 text-gold-400 mx-auto md:mx-0" />
-          <h2 className="mt-4 font-display text-3xl">Programare confirmată</h2>
-          <p className="mt-2 text-muted-foreground">
+          <CheckCircle2 className="h-12 w-12 text-zinc-900 mx-auto md:mx-0" />
+          <h2 className="mt-4 font-display text-3xl text-zinc-900 uppercase">
+            Programare confirmată
+          </h2>
+          <p className="mt-2 text-zinc-400 text-sm">
             Te așteptăm la salon. Te vom suna pentru confirmare.
           </p>
-          <div className="mt-6 inline-block text-left rounded-lg border border-white/5 bg-background/40 p-4 text-sm space-y-2">
+          <div className="mt-6 inline-block text-left border border-zinc-200 rounded-xl bg-zinc-50 p-4 text-sm space-y-2 min-w-[240px]">
             <Row label="Serviciu" value={service?.name ?? "—"} />
             <Row label="Frizer" value={barber?.full_name ?? "—"} />
             <Row
@@ -705,23 +708,31 @@ function SuccessPanel({
             )}
           </div>
           <div className="mt-6">
-            <Button asChild>
-              <a href="/">Înapoi la pagina principală</a>
-            </Button>
+            <a
+              href="/"
+              className="inline-flex items-center gap-2 bg-zinc-900 text-white px-6 py-3 rounded-full text-[0.68rem] font-semibold tracking-[0.15em] uppercase hover:bg-black transition-colors"
+            >
+              Înapoi la pagina principală
+            </a>
           </div>
         </div>
 
-        {/* QR code */}
+        {/* QR */}
         <div className="flex flex-col items-center gap-2 shrink-0">
-          <div className="rounded-xl border border-gold-500/20 p-3 bg-background/60">
+          <div className="border border-zinc-200 p-3 bg-white">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={qrSrc} alt="QR programare" width={160} height={160} className="rounded-lg" />
+            <img
+              src={qrSrc}
+              alt="QR programare"
+              width={160}
+              height={160}
+            />
           </div>
-          <p className="text-xs text-muted-foreground text-center max-w-[160px]">
+          <p className="text-xs text-zinc-400 text-center max-w-[160px]">
             Prezintă QR-ul la salon
           </p>
           {appointmentId && (
-            <p className="text-[10px] text-muted-foreground/60 font-mono">
+            <p className="text-[10px] text-zinc-300 font-mono">
               #{appointmentId.slice(0, 8)}
             </p>
           )}

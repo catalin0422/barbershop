@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import type { AppointmentStatus } from "@/lib/types";
 
@@ -19,10 +17,17 @@ interface CalendarAppointment {
 const HOURS = Array.from({ length: 11 }, (_, i) => i + 9); // 09:00 → 19:00
 const HOUR_HEIGHT = 64; // px per hour
 const STATUS_COLORS: Record<AppointmentStatus, string> = {
-  pending: "bg-amber-500/20 border-amber-500/50 text-amber-200",
-  confirmed: "bg-gold-500/20 border-gold-500/50 text-gold-200",
-  completed: "bg-emerald-500/20 border-emerald-500/50 text-emerald-200",
-  cancelled: "bg-red-500/10 border-red-500/30 text-red-300 opacity-50",
+  pending: "bg-zinc-100 border-zinc-300 text-zinc-600",
+  confirmed: "bg-zinc-900 border-zinc-900 text-white",
+  completed: "bg-zinc-600 border-zinc-600 text-white",
+  cancelled: "bg-red-50 border-red-200 text-red-400 opacity-50",
+};
+
+const STATUS_LABELS: Record<AppointmentStatus, string> = {
+  pending: "Pending",
+  confirmed: "Confirmat",
+  completed: "Finalizat",
+  cancelled: "Anulat",
 };
 
 function startOfWeek(date: Date) {
@@ -80,17 +85,16 @@ export function WeeklyCalendar({
   }
 
   return (
-    <div className="rounded-xl border border-white/5 bg-card/50 overflow-hidden">
+    <div className="rounded-xl border border-zinc-200 bg-white overflow-hidden">
       {/* Week nav */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-white/5">
-        <Button
-          variant="ghost"
-          size="icon"
+      <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-100">
+        <button
           onClick={() => setWeekStart((w) => addDays(w, -7))}
+          className="p-1.5 rounded-lg hover:bg-zinc-100 text-zinc-500 hover:text-zinc-900 transition-colors"
         >
           <ChevronLeft className="h-4 w-4" />
-        </Button>
-        <span className="text-sm font-medium">
+        </button>
+        <span className="text-sm font-medium text-zinc-900">
           {weekStart.toLocaleDateString("ro-RO", {
             day: "numeric",
             month: "long",
@@ -102,17 +106,16 @@ export function WeeklyCalendar({
             year: "numeric",
           })}
         </span>
-        <Button
-          variant="ghost"
-          size="icon"
+        <button
           onClick={() => setWeekStart((w) => addDays(w, 7))}
+          className="p-1.5 rounded-lg hover:bg-zinc-100 text-zinc-500 hover:text-zinc-900 transition-colors"
         >
           <ChevronRight className="h-4 w-4" />
-        </Button>
+        </button>
       </div>
 
       {/* Day headers */}
-      <div className="grid grid-cols-[48px_repeat(7,1fr)] border-b border-white/5">
+      <div className="grid grid-cols-[48px_repeat(7,1fr)] border-b border-zinc-100">
         <div />
         {weekDays.map((day) => {
           const isToday = day.getTime() === today.getTime();
@@ -120,17 +123,17 @@ export function WeeklyCalendar({
             <div
               key={day.toISOString()}
               className={cn(
-                "py-2 text-center text-xs border-l border-white/5",
-                isToday && "bg-gold-500/5",
+                "py-2 text-center text-xs border-l border-zinc-100",
+                isToday && "bg-zinc-50",
               )}
             >
-              <div className="text-muted-foreground uppercase tracking-wider">
+              <div className="text-zinc-400 uppercase tracking-wider">
                 {day.toLocaleDateString("ro-RO", { weekday: "short" }).replace(".", "")}
               </div>
               <div
                 className={cn(
-                  "font-display text-lg mt-0.5",
-                  isToday && "text-gold-400",
+                  "font-display text-lg mt-0.5 text-zinc-700",
+                  isToday && "text-zinc-900 font-bold",
                 )}
               >
                 {day.getDate()}
@@ -151,7 +154,7 @@ export function WeeklyCalendar({
             {HOURS.map((h) => (
               <div
                 key={h}
-                className="absolute left-0 w-full text-right pr-2 text-xs text-muted-foreground"
+                className="absolute left-0 w-full text-right pr-2 text-xs text-zinc-400"
                 style={{ top: (h - HOURS[0]) * HOUR_HEIGHT - 7 }}
               >
                 {String(h).padStart(2, "0")}:00
@@ -167,8 +170,8 @@ export function WeeklyCalendar({
               <div
                 key={day.toISOString()}
                 className={cn(
-                  "relative border-l border-white/5",
-                  isToday && "bg-gold-500/3",
+                  "relative border-l border-zinc-100",
+                  isToday && "bg-zinc-50/50",
                 )}
                 style={{ minHeight: HOUR_HEIGHT * HOURS.length }}
               >
@@ -176,7 +179,7 @@ export function WeeklyCalendar({
                 {HOURS.map((h) => (
                   <div
                     key={h}
-                    className="absolute w-full border-t border-white/5"
+                    className="absolute w-full border-t border-zinc-100"
                     style={{ top: (h - HOURS[0]) * HOUR_HEIGHT }}
                   />
                 ))}
@@ -194,7 +197,7 @@ export function WeeklyCalendar({
                       key={apt.id}
                       title={`${apt.client_name} — ${apt.service?.name}`}
                       className={cn(
-                        "absolute left-1 right-1 rounded-md border px-1.5 py-1 text-xs overflow-hidden cursor-default transition-opacity hover:opacity-90",
+                        "absolute left-1 right-1 rounded-lg border px-1.5 py-1 text-xs overflow-hidden cursor-default transition-opacity hover:opacity-90",
                         STATUS_COLORS[apt.status],
                       )}
                       style={{ top, height: Math.max(height, 28) }}
@@ -203,7 +206,7 @@ export function WeeklyCalendar({
                         {apt.client_name}
                       </div>
                       {height > 36 && (
-                        <div className="truncate opacity-80 leading-tight">
+                        <div className="truncate opacity-70 leading-tight">
                           {apt.service?.name}
                         </div>
                       )}
@@ -217,15 +220,13 @@ export function WeeklyCalendar({
       </div>
 
       {/* Legend */}
-      <div className="flex flex-wrap items-center gap-3 px-4 py-2 border-t border-white/5 text-xs text-muted-foreground">
-        {(["pending", "confirmed", "completed"] as AppointmentStatus[]).map(
-          (s) => (
-            <span key={s} className="flex items-center gap-1.5">
-              <Badge variant={s === "pending" ? "warning" : s === "confirmed" ? "default" : "success"}>·</Badge>
-              {s === "pending" ? "Pending" : s === "confirmed" ? "Confirmat" : "Finalizat"}
-            </span>
-          ),
-        )}
+      <div className="flex flex-wrap items-center gap-4 px-4 py-2.5 border-t border-zinc-100 text-xs text-zinc-500">
+        {(["pending", "confirmed", "completed"] as AppointmentStatus[]).map((s) => (
+          <span key={s} className="flex items-center gap-1.5">
+            <span className={cn("inline-block h-2.5 w-2.5 rounded-sm border", STATUS_COLORS[s])} />
+            {STATUS_LABELS[s]}
+          </span>
+        ))}
       </div>
     </div>
   );

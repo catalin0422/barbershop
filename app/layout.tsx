@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Bebas_Neue } from "next/font/google";
+import { Inter, Anton } from "next/font/google";
 import "./globals.css";
 
 const sans = Inter({
@@ -8,7 +8,7 @@ const sans = Inter({
   display: "swap",
 });
 
-const display = Bebas_Neue({
+const display = Anton({
   subsets: ["latin"],
   weight: "400",
   variable: "--font-display",
@@ -30,7 +30,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ro" className={`${sans.variable} ${display.variable} dark`}>
+    <html lang="ro" className={`${sans.variable} ${display.variable}`}>
       <body className="min-h-screen font-sans">{children}</body>
     </html>
   );

@@ -10,7 +10,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -43,12 +42,12 @@ const STATUS_OPTIONS: AppointmentStatus[] = ["confirmed", "cancelled"];
 
 const STATUS_BADGES: Record<
   AppointmentStatus,
-  { variant: any; label: string }
+  { cls: string; label: string }
 > = {
-  pending: { variant: "warning", label: "Confirmată" },
-  confirmed: { variant: "default", label: "Confirmată" },
-  completed: { variant: "default", label: "Confirmată" },
-  cancelled: { variant: "destructive", label: "Anulată" },
+  pending: { cls: "bg-zinc-100 text-zinc-600", label: "Pending" },
+  confirmed: { cls: "bg-zinc-900 text-white", label: "Confirmat" },
+  completed: { cls: "bg-zinc-700 text-white", label: "Finalizat" },
+  cancelled: { cls: "bg-red-50 text-red-600", label: "Anulat" },
 };
 
 export function AppointmentsTable({
@@ -178,9 +177,9 @@ export function AppointmentsTable({
                     </SelectContent>
                   </Select>
                 ) : (
-                  <Badge variant={STATUS_BADGES[row.status].variant}>
+                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${STATUS_BADGES[row.status].cls}`}>
                     {STATUS_BADGES[row.status].label}
-                  </Badge>
+                  </span>
                 )}
               </TableCell>
             </TableRow>

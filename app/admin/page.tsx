@@ -13,7 +13,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -117,10 +116,10 @@ export default async function AdminOverviewPage() {
   ];
 
   const pieData = [
-    { name: "Pending", value: allCounts.pending ?? 0, color: "#f59e0b" },
-    { name: "Confirmed", value: allCounts.confirmed ?? 0, color: "#d4af37" },
-    { name: "Completed", value: allCounts.completed ?? 0, color: "#10b981" },
-    { name: "Cancelled", value: allCounts.cancelled ?? 0, color: "#ef4444" },
+    { name: "Pending", value: allCounts.pending ?? 0, color: "#a1a1aa" },
+    { name: "Confirmate", value: allCounts.confirmed ?? 0, color: "#18181b" },
+    { name: "Finalizate", value: allCounts.completed ?? 0, color: "#52525b" },
+    { name: "Anulate", value: allCounts.cancelled ?? 0, color: "#f87171" },
   ].filter((d) => d.value > 0);
 
   return (
@@ -131,7 +130,7 @@ export default async function AdminOverviewPage() {
           <Card key={label}>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardDescription>{label}</CardDescription>
-              <Icon className="h-4 w-4 text-gold-400" />
+              <Icon className="h-4 w-4 text-zinc-400" />
             </CardHeader>
             <CardContent>
               <div className="font-display text-3xl">{value}</div>
@@ -247,12 +246,16 @@ export default async function AdminOverviewPage() {
 }
 
 function StatusBadge({ status }: { status: AppointmentStatus }) {
-  const map: Record<AppointmentStatus, { variant: any; label: string }> = {
-    pending: { variant: "warning", label: "Pending" },
-    confirmed: { variant: "default", label: "Confirmed" },
-    completed: { variant: "success", label: "Completed" },
-    cancelled: { variant: "destructive", label: "Cancelled" },
+  const map: Record<AppointmentStatus, { cls: string; label: string }> = {
+    pending: { cls: "bg-zinc-100 text-zinc-600", label: "Pending" },
+    confirmed: { cls: "bg-zinc-900 text-white", label: "Confirmat" },
+    completed: { cls: "bg-zinc-700 text-white", label: "Finalizat" },
+    cancelled: { cls: "bg-red-50 text-red-600", label: "Anulat" },
   };
-  const conf = map[status];
-  return <Badge variant={conf.variant}>{conf.label}</Badge>;
+  const { cls, label } = map[status];
+  return (
+    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${cls}`}>
+      {label}
+    </span>
+  );
 }

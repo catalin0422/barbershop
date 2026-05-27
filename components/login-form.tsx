@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createClient } from "@/lib/supabase/client";
@@ -58,9 +57,14 @@ export function LoginForm({
   }
 
   return (
-    <form onSubmit={onSubmit} className="mt-6 space-y-4">
+    <form onSubmit={onSubmit} className="space-y-4">
       <div>
-        <Label htmlFor="email">Email</Label>
+        <Label
+          htmlFor="email"
+          className="text-zinc-500 text-xs uppercase tracking-wider"
+        >
+          Email
+        </Label>
         <Input
           id="email"
           type="email"
@@ -68,11 +72,16 @@ export function LoginForm({
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="mt-1.5"
+          className="mt-1.5 bg-white border-zinc-200 text-zinc-900 placeholder:text-zinc-300 rounded-lg focus-visible:ring-zinc-900"
         />
       </div>
       <div>
-        <Label htmlFor="password">Parolă</Label>
+        <Label
+          htmlFor="password"
+          className="text-zinc-500 text-xs uppercase tracking-wider"
+        >
+          Parolă
+        </Label>
         <Input
           id="password"
           type="password"
@@ -80,23 +89,28 @@ export function LoginForm({
           required
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="mt-1.5"
+          className="mt-1.5 bg-white border-zinc-200 text-zinc-900 placeholder:text-zinc-300 rounded-lg focus-visible:ring-zinc-900"
         />
       </div>
       {error && (
-        <p className="text-sm text-red-400 border border-red-500/30 bg-red-500/10 rounded-md p-2">
+        <p className="text-sm text-red-500 border border-red-200 bg-red-50 rounded-lg p-3">
           {error}
         </p>
       )}
-      <Button type="submit" disabled={busy} className="w-full">
+      <button
+        type="submit"
+        disabled={busy}
+        className="w-full flex items-center justify-center gap-2.5 bg-zinc-900 text-white px-6 py-3.5 rounded-full text-[0.68rem] font-semibold tracking-[0.18em] uppercase hover:bg-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+      >
         {busy ? (
           <>
-            <Loader2 className="h-4 w-4 animate-spin" /> Se autentifică...
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Se autentifică...
           </>
         ) : (
           "Autentificare"
         )}
-      </Button>
+      </button>
     </form>
   );
 }

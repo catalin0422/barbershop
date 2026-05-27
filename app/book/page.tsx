@@ -1,6 +1,6 @@
 import { Suspense } from "react";
-import { SiteHeaderServer } from "@/components/site-header-server";
 import { SiteFooter } from "@/components/site-footer";
+import { PageHeader } from "@/components/page-header";
 import { BookingWizard } from "@/components/booking/booking-wizard";
 import { createClient } from "@/lib/supabase/server";
 import type { Profile, Service } from "@/lib/types";
@@ -36,16 +36,25 @@ export default async function BookPage({
   const { services, barbers } = await getBookingData();
 
   return (
-    <>
-      <SiteHeaderServer />
-      <main className="container py-10 md:py-16 min-h-[80vh]">
-        <div className="max-w-3xl mx-auto">
-          <h1 className="font-display text-4xl md:text-5xl font-bold tracking-tight">
-            Rezervă-ți <span className="text-gradient-gold">slotul</span>
-          </h1>
-          <p className="mt-3 text-muted-foreground">
-            4 pași simpli — și ne vedem la salon.
-          </p>
+    <div className="min-h-screen bg-white flex flex-col">
+      {/* Nav identic cu hero-ul */}
+      <PageHeader />
+
+      <main className="flex-1">
+        <div className="max-w-3xl mx-auto px-6 md:px-10 py-12 md:py-20">
+          {/* Page header */}
+          <div className="border-b border-zinc-200 pb-8 mb-10">
+            <p className="text-[0.6rem] tracking-[0.3em] uppercase text-zinc-400 mb-4 font-sans">
+              /rezervare
+            </p>
+            <h1 className="font-display text-5xl md:text-6xl text-zinc-900 uppercase leading-none">
+              Rezervă-ți slotul
+            </h1>
+            <p className="mt-3 text-zinc-400 text-sm">
+              4 pași simpli — și ne vedem la salon.
+            </p>
+          </div>
+
           <Suspense fallback={null}>
             <BookingWizard
               services={services}
@@ -56,7 +65,8 @@ export default async function BookPage({
           </Suspense>
         </div>
       </main>
+
       <SiteFooter />
-    </>
+    </div>
   );
 }

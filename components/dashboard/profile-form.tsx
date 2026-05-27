@@ -76,7 +76,7 @@ export function ProfileForm({ profile }: { profile: Profile }) {
       {/* Avatar upload */}
       <div className="flex items-center gap-5">
         <div className="relative group cursor-pointer" onClick={() => fileRef.current?.click()}>
-          <div className="h-20 w-20 rounded-full overflow-hidden bg-secondary grid place-items-center text-xl font-display text-gold-300 ring-2 ring-gold-500/20">
+          <div className="h-20 w-20 rounded-full overflow-hidden bg-zinc-100 grid place-items-center text-xl font-display text-zinc-600 ring-2 ring-zinc-200">
             {avatarPreview ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={avatarPreview} alt="Avatar" className="h-full w-full object-cover" />
