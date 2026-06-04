@@ -39,7 +39,7 @@ export async function PageHeader({ dark = false }: Props) {
       {/* Top rule */}
       <div className={`h-px ${line} mb-5`} />
 
-      <div className="relative flex items-start justify-between">
+      <div className="relative flex items-start justify-between min-h-[44px]">
 
         {/* Left — stacked nav links */}
         <div className="hidden md:flex flex-col gap-[3px]">
@@ -57,7 +57,7 @@ export async function PageHeader({ dark = false }: Props) {
         {/* Center — logo */}
         <div className="absolute left-1/2 -translate-x-1/2 text-center">
           <Link href="/">
-            <div className={`font-display text-xl tracking-[0.35em] leading-none ${fgStrong}`}>
+            <div className={`font-display text-base md:text-xl tracking-[0.25em] md:tracking-[0.35em] leading-none ${fgStrong}`}>
               BARBERS
             </div>
             <div className={`text-[0.5rem] tracking-[0.55em] uppercase mt-0.5 ${dark ? "text-white/50" : "text-zinc-400"}`}>
@@ -88,7 +88,7 @@ export async function PageHeader({ dark = false }: Props) {
       </div>
 
       {/* Bottom rule */}
-      <div className={`h-px ${line} mt-5`} />
+      <div className={`h-px ${line} mt-3`} />
     </nav>
   );
 }

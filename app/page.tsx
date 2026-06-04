@@ -97,14 +97,13 @@ function Hero() {
       </div>
 
       {/* ── Main content — bottom-left ── */}
-      <div className="absolute bottom-0 left-0 z-20 px-8 lg:px-14 pb-12 lg:pb-16"
-           style={{ maxWidth: "min(700px, calc(100% - 300px))" }}>
+      <div className="absolute bottom-0 left-0 z-20 px-8 lg:px-14 pb-12 lg:pb-16 w-full md:w-auto md:max-w-[700px]">
 
         {/* Section marker */}
         <p className="text-white/35 text-[0.7rem] tracking-[0.25em] mb-3 font-sans">/01</p>
 
         {/* Hero heading */}
-        <h1 className="font-display text-[14vw] sm:text-[12vw] md:text-[9.5vw] lg:text-[8.5vw] text-white leading-[0.92] tracking-tight uppercase">
+        <h1 className="font-display text-[11vw] sm:text-[12vw] md:text-[9.5vw] lg:text-[8.5vw] text-white leading-[0.92] tracking-tight uppercase">
           Barbering
           <br />
           is what
@@ -125,7 +124,7 @@ function Hero() {
           {/* Book CTA */}
           <Link
             href="/book"
-            className="inline-flex items-center gap-3 bg-white text-black px-7 py-3 rounded-full text-[0.68rem] font-semibold tracking-[0.18em] uppercase hover:bg-white/90 transition-colors group"
+            className="inline-flex items-center gap-2 bg-white text-black px-5 py-2.5 md:px-7 md:py-3 rounded-full text-[0.62rem] md:text-[0.68rem] font-semibold tracking-[0.15em] md:tracking-[0.18em] uppercase hover:bg-white/90 transition-colors group"
           >
             Programează-te
             <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
@@ -134,7 +133,7 @@ function Hero() {
           {/* Services CTA */}
           <Link
             href="/#services"
-            className="inline-flex items-center gap-3 border border-white/40 text-white px-7 py-3 rounded-full text-[0.68rem] font-semibold tracking-[0.18em] uppercase hover:border-white/80 transition-colors group"
+            className="inline-flex items-center gap-2 border border-white/40 text-white px-5 py-2.5 md:px-7 md:py-3 rounded-full text-[0.62rem] md:text-[0.68rem] font-semibold tracking-[0.15em] md:tracking-[0.18em] uppercase hover:border-white/80 transition-colors group"
           >
             Servicii
             <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
